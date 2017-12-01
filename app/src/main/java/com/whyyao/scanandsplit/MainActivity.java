@@ -1,18 +1,14 @@
 package com.whyyao.scanandsplit;
 
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
-import android.util.StringBuilderPrinter;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
@@ -22,11 +18,13 @@ public class MainActivity extends AppCompatActivity {
 
     private Button mRead;
     private TextView mText;
+    private TextBlockParser blockParser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        blockParser = new TextBlockParser();
         bindView();
         init();
     }
@@ -38,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init(){
-        final Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.sample);
+        final Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.hbc_min);
         mRead.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -46,9 +44,14 @@ public class MainActivity extends AppCompatActivity {
                 TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
                 if (!textRecognizer.isOperational()) {
                   Log.e("ERROR", "Dependency not avaliable");
-                }else{
+                } else{
                     Frame frame = new Frame.Builder().setBitmap(bitmap).build();
                     SparseArray<TextBlock> items = textRecognizer.detect(frame);
+                    /*
+                        PASSING OF THE TEXTBLOCK OBJECTS BELLOW
+                     */
+                    blockParser.setItems(items);
+                    blockParser.test();
                     StringBuilder stringBuilder = new StringBuilder();
                     for (int i = 0; i < items.size(); ++i) {
                         TextBlock item = items.valueAt(i);
