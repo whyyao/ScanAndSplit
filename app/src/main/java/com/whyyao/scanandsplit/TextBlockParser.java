@@ -1,5 +1,6 @@
 package com.whyyao.scanandsplit;
 
+import android.app.PendingIntent;
 import android.graphics.Point;
 import android.util.Log;
 import android.util.SparseArray;
@@ -41,46 +42,68 @@ public class TextBlockParser {
      */
     public void test() {
         ArrayList<Integer> boxHeights = new ArrayList<Integer>();
-        // Match things with the same relative coordinates horitonzally
+
         // Parse out heights of boxes
         for (int i = 0; i < this.codedItems.size(); ++i) {
             TextBlock item = codedItems.valueAt(i);
-            ArrayList<Point> pointList = new ArrayList<Point>();
             Point[] tempPoints = item.getCornerPoints();
             current.add(item.getValue());
-
-            /*
-            System.out.println(i + " " + item.getValue());
-            System.out.println("TOP-LEFT" + "<" + tempPoints[0].x + ", " + tempPoints[0].y + ">");
-            System.out.println("TOP-RIGHT" +  "<" + tempPoints[1].x + ", " + tempPoints[1].y + ">");
-            System.out.println("BOTTOM-LEFT" +  "<" + tempPoints[2].x + ", " + tempPoints[2].y + ">");
-            System.out.println("BOTTOM-RIGHT" + "<" +tempPoints[3].x + ", " + tempPoints[3].y + ">\n");
-            System.out.println("Height of current box" + (tempPoints[0].y  - tempPoints[3].y) + "\n"); */
-
             int height = tempPoints[3].y - tempPoints[0].y;
-            Log.d("Original Heights", "" + height);
             boxHeights.add(height);
-
-            //stringBuilder.append("\n");
         }
 
-        int firstBox = 0;
-        int secondBox = 0;
+        // Find the heights of the two largest boxes
+        int firstBox = 0, firstCoodinate = 0;
+        int secondBox = 0, secondCoordinate = 0;
         for (int i = 0; i < boxHeights.size(); i++) {
             if (firstBox <= boxHeights.get(i)) {
                 secondBox = firstBox;
+                secondCoordinate = i-1;
                 firstBox = boxHeights.get(i);
+                firstCoodinate = i;
             } else if (secondBox <= boxHeights.get(i)) {
                 secondBox = boxHeights.get(i);
+                secondCoordinate = i;
             }
         }
-        
-        Log.d("Box 1", "" + firstBox);
-        Log.d("Box 2", "" + secondBox);
+
+        // Log.d("Box 1", "" + firstBox);
+        // Log.d("Box 2", "" + secondBox);
+
+        //Log.d("Item List", itemListString);
+        //Log.d("Cost List", costListString);
+
+        String s2 = codedItems.valueAt(secondCoordinate).getValue();
+
+        ArrayList<String> firstList = stringParser(codedItems.valueAt(firstCoodinate).getValue());
+        //ArrayList<String> secondList = stringParser(s2);
+        Log.d("S2", s2);
+        // ArrayListPrinter(firstList);
+        //ArrayListPrinter(secondList);
 
 
     }
 
+    private ArrayList<String> stringParser(String s) {
+        ArrayList<String> result = new ArrayList<>();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            String temp = null;
+            if (c == '\n') {
+                temp = s.substring(0, i);
+                result.add(temp);
+                s.substring(i, s.length());
+            }
+        }
+
+        return result;
+    }
+
+    private void ArrayListPrinter(ArrayList<String> a) {
+        for (int i = 0; i < a.size(); i++) {
+            System.out.println(a.get(i));
+        }
+    }
 
 }
 
