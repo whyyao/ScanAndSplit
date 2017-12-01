@@ -55,10 +55,8 @@ public class MainActivity extends AppCompatActivity {
                      */
                     ArrayList<Item> itemsList = blockParser.parse(items);
                     StringBuilder stringBuilder = new StringBuilder();
-                    for (int i = 0; i < items.size(); ++i) {
-                        TextBlock item = items.valueAt(i);
-                        stringBuilder.append(item.getValue());
-                        stringBuilder.append("\n");
+                    for (int i = 0; i < itemsList.size(); i++) {
+                        stringBuilder.append(itemsList.get(i).getName() + "   $" + itemsList.get(i).getPrice() + "\n");
                     }
                     mText.setText(stringBuilder);
                 }
