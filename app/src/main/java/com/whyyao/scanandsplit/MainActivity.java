@@ -14,6 +14,9 @@ import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     private Button mRead;
@@ -50,8 +53,7 @@ public class MainActivity extends AppCompatActivity {
                     /*
                         PASSING OF THE TEXTBLOCK OBJECTS BELLOW
                      */
-                    blockParser.setItems(items);
-                    blockParser.test();
+                    ArrayList<Item> itemsList = blockParser.parse(items);
                     StringBuilder stringBuilder = new StringBuilder();
                     for (int i = 0; i < items.size(); ++i) {
                         TextBlock item = items.valueAt(i);

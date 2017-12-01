@@ -9,7 +9,19 @@ public class Item {
     private String name;
     private double price;
 
+    Item() {
+        name = null;
+        price = 0.00;
+    }
 
+    Item(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public void print() {
+        System.out.println(name + " " + price);
+    }
     public void setName(String data){
         name = data;
     }
