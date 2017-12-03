@@ -39,7 +39,10 @@ import com.google.android.gms.vision.text.TextRecognizer;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+
+import com.whyyao.scanandsplit.models.Item;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -84,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CAMERA);
-        }else{
+        } else{
             imageFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "receipt_" + System.currentTimeMillis() + ".jpg");
             imageUri = FileProvider.getUriForFile(this, "com.whyyao.scanandsplit.fileprovider", imageFile);
             Intent takeIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -97,10 +100,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             try {
-                //Uri currentUri = FileProvider.getUriForFile(this, "com.whyyao.scanandsplit.fileprovider", imageFile);
+                TextBlockParser parser = new TextBlockParser();
+                Uri currentUri = FileProvider.getUriForFile(this, "com.whyyao.scanandsplit.fileprovider", imageFile);
                 Bitmap thumbnail = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                 mImage.setImageBitmap(thumbnail);
-                scanText(thumbnail);
+                ArrayList<Item> itemList = parser.parse(scanText(thumbnail));
             } catch (Exception e) {
                 e.printStackTrace();
             }
