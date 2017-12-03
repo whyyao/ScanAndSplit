@@ -1,18 +1,10 @@
 package com.whyyao.scanandsplit;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -24,23 +16,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
-import android.util.StringBuilderPrinter;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import com.whyyao.scanandsplit.models.Item;
 
@@ -103,8 +89,14 @@ public class MainActivity extends AppCompatActivity {
                 TextBlockParser parser = new TextBlockParser();
                 Uri currentUri = FileProvider.getUriForFile(this, "com.whyyao.scanandsplit.fileprovider", imageFile);
                 Bitmap thumbnail = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                mImage.setImageBitmap(thumbnail);
-                ArrayList<Item> itemList = parser.parse(scanText(thumbnail));
+                Bitmap test = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.hbc_min);
+                // mImage.setImageBitmap(thumbnail);
+                Log.d("aftercam","before parse");
+                ArrayList<Item> itemList = new ArrayList<>(parser.parse(scanText(test)));
+                Log.d("aftercam",String.valueOf(itemList.size()));
+                Intent intent = new Intent(MainActivity.this, InteractiveReceiptActivity.class);
+                intent.putExtra("items", itemList);
+                startActivity(intent);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -119,13 +111,13 @@ public class MainActivity extends AppCompatActivity {
         }else{
             Frame frame = new Frame.Builder().setBitmap(bitmap).build();
             items = textRecognizer.detect(frame);
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < items.size(); ++i) {
-                TextBlock item = items.valueAt(i);
-                stringBuilder.append(item.getValue());
-                stringBuilder.append("\n");
-            }
-            mText.setText(stringBuilder);
+//            StringBuilder stringBuilder = new StringBuilder();
+//            for (int i = 0; i < items.size(); ++i) {
+//                TextBlock item = items.valueAt(i);
+//                stringBuilder.append(item.getValue());
+//                stringBuilder.append("\n");
+//            }
+            // mText.setText(stringBuilder);
         }
         return items;
     }
