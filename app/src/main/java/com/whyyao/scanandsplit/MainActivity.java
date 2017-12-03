@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mImage;
     private Uri imageUri;
     private File imageFile;
+    private TextBlockParser parser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +59,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init(){
+        parser = new TextBlockParser();
         mCam.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                lunchCam();
+                Bitmap test = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.hbc_min);
+                ArrayList<Item> itemList = new ArrayList<>(parser.parse(scanText(test)));
+                Intent intent = new Intent(MainActivity.this, InteractiveReceiptActivity.class);
+                intent.putExtra("Items", itemList);
+                startActivity(intent);
+                // todo: Uncomment this once we want to use the camera
+                // lunchCam();
             }
         });
     }
@@ -86,16 +94,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             try {
-                TextBlockParser parser = new TextBlockParser();
                 Uri currentUri = FileProvider.getUriForFile(this, "com.whyyao.scanandsplit.fileprovider", imageFile);
                 Bitmap thumbnail = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                 Bitmap test = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.hbc_min);
                 // mImage.setImageBitmap(thumbnail);
-                Log.d("aftercam","before parse");
                 ArrayList<Item> itemList = new ArrayList<>(parser.parse(scanText(test)));
-                Log.d("aftercam",String.valueOf(itemList.size()));
                 Intent intent = new Intent(MainActivity.this, InteractiveReceiptActivity.class);
-                intent.putExtra("items", itemList);
+                intent.putExtra("Items", itemList);
                 startActivity(intent);
             } catch (Exception e) {
                 e.printStackTrace();

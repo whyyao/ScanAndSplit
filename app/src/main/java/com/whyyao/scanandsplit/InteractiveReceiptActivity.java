@@ -28,7 +28,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        items = intent.getParcelableArrayListExtra("items");
+        items = intent.getParcelableArrayListExtra("Items");
         setContentView(R.layout.activity_list_view);
         TextView testing = (TextView) findViewById(R.id.text_view_test);
         String huge_String = "";
