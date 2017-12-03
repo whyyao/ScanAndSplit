@@ -6,6 +6,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.android.gms.vision.text.TextBlock;
+import com.whyyao.scanandsplit.models.Item;
 
 import org.w3c.dom.Text;
 
