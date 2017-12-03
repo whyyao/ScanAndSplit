@@ -41,7 +41,6 @@
             android:id="@+id/imageview"
             android:layout_width="186dp"
             android:layout_height="374dp"
-            android:src="@drawable/common_full_open_on_phone"
             app:layout_constraintRight_toLeftOf="@+id/textview"
             android:layout_marginRight="8dp"
             android:layout_marginLeft="8dp"
@@ -51,12 +50,5 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.4"
             android:layout_marginBottom="8dp" />
-
-        <Button
-            android:id="@+id/button_read"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="YAY"/>
-
 
 </android.support.constraint.ConstraintLayout>
