@@ -37,6 +37,7 @@
         <activity android:name=".InteractiveReceiptActivity">
 
         </activity>
+        <activity android:name=".CalculationActivity" />
 
 
         <meta-data

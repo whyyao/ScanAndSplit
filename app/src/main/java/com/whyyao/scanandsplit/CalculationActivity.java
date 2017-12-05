@@ -3,6 +3,7 @@ package com.whyyao.scanandsplit;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -11,15 +12,36 @@ import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.view.View;
 
+import com.whyyao.scanandsplit.models.Contact;
+import com.whyyao.scanandsplit.models.Item;
+
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Map;
+
 public class CalculationActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final int PERMISSIONS_REQUEST_SEND_SMS = 0;
     String phoneNo;
     String message;
+    ArrayList<Double> mMoney;
+
+    ArrayList<Contact> mContacts;
+    Map<Item, Integer> mItemMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // TODO: get mContacts and mItemMap from intent
+        double mSum;
+        for (Contact c : mContacts) {
+            mSum = 0;
+            for (Item i : c.getItemList()) {
+                mSum += i.getPrice() / mItemMap.get(i);
+            }
+            mMoney.add(mSum);
+            // TODO: put c.getName and String.format("%.2f", mSum) in textViews
+        }
         setContentView(R.layout.activity_calculation);
     }
 
@@ -34,11 +56,19 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View v) {
-
+        switch (v.getId()) {
+            case R.id.floatingActionButtonC:
+                for (int i = 0; i < mContacts.size(); i++) {
+                    phoneNo = mContacts.get(i).getPhoneNo();
+                    message = "You owe me $" + String.format(Locale.CANADA, "%.2f", mMoney.get(i)) + ".";
+                    sendSMSMessage();
+                }
+                break;
+        }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_SEND_SMS:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
