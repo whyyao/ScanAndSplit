@@ -28,6 +28,7 @@ import com.google.android.gms.vision.text.TextRecognizer;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.whyyao.scanandsplit.helpers.TextBlockParser;
 import com.whyyao.scanandsplit.models.Item;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void bindView(){
         mCam = (ImageButton) findViewById(R.id.cam_button);
-        mText = (TextView) findViewById(R.id.textview);
         mImage = (ImageView) findViewById(R.id.imageview);
     }
 

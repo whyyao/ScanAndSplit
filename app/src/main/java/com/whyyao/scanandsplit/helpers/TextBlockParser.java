@@ -1,4 +1,4 @@
-package com.whyyao.scanandsplit;
+package com.whyyao.scanandsplit.helpers;
 
 import android.app.PendingIntent;
 import android.graphics.Point;
