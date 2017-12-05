@@ -12,9 +12,18 @@ public class Contact {
     private String phoneNo;
     private List<Item> items;
 
-    public Contact(){
+    public Contact() {
+        name = "";
+        phoneNo = "";
         items = new ArrayList<>();
     }
+
+    public Contact(String name, String phoneNo) {
+        this.name = name;
+        this.phoneNo = phoneNo;
+        items = new ArrayList<>();
+    }
+
 
     public void addItem(Item item){
         items.add(item);

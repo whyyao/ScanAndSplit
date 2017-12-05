@@ -8,11 +8,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.style.TtsSpan;
+import android.util.FloatProperty;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -21,6 +24,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.vision.text.Text;
+import com.whyyao.scanandsplit.helpers.ContactPicker;
+import com.whyyao.scanandsplit.helpers.ContactPicker;
 import com.whyyao.scanandsplit.models.Item;
 
 import java.util.ArrayList;
@@ -32,9 +37,9 @@ import java.util.ArrayList;
 public class InteractiveReceiptActivity extends AppCompatActivity implements View.OnClickListener {
     private ListView list;
     private ArrayList<Item> items;
-    private final int PICK_CONTACT = 1;
-    private Button mButton;
-    private final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
+    private final int PICK_CONTACT = 2;
+    private FloatingActionButton mButton;
+    private final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,7 +53,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
             huge_String = huge_String + items.get(i).toString();
         }
         testing.setText(huge_String);
-        mButton = (Button) findViewById(R.id.add_contant);
+        mButton = (FloatingActionButton) findViewById(R.id.add_contact);
         mButton.setOnClickListener(this);
         /*
         for (int i = 0; i < 5; i++){
@@ -60,40 +65,41 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     }
 
     public void onClick(View view){
-        int ID = view.getId();
-        switch(ID){
-            case R.id.add_contant:
-                // Here, thisActivity is the current activity
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        int viewId = view.getId();
+        switch(viewId) {
+            case R.id.add_contact:
 
-                    // Should we show an explanation?
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)) {
-
-                        // Show an explanation to the user *asynchronously* -- don't block
-                        // this thread waiting for the user's response! After the user
-                        // sees the explanation, try again to request the permission.
-
-                    } else {
-
-                        // No explanation needed, we can request the permission.
-
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.READ_CONTACTS},
-                                MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-
-                        // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                        // app-defined int constant. The callback method gets the
-                        // result of the request.
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                    pickContacts();
+                } else {
+                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS}, PICK_CONTACT);
+                    Log.e("Contacts", "Not Opening");
+                    if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                        pickContacts();
                     }
                 }
-                startPickingContact();
-
         }
     }
 
-    protected void startPickingContact(){
-        Intent intent = new Intent (Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-        startActivityForResult(intent, PICK_CONTACT);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PICK_CONTACT) {
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                pickContacts();
+            }
+        }
+    }
+
+
+
+    protected void pickContacts(){
+        Intent intent = new Intent(InteractiveReceiptActivity.this, ContactPicker.class);
+        startActivity(intent);
+        /*
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
+        startActivityForResult(intent, PICK_CONTACT); */
     }
 
     @Override
@@ -106,8 +112,6 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
                     Uri contactData = data.getData();
                     Cursor c = managedQuery(contactData, null, null, null, null);
                     if (c.moveToFirst()) {
-
-
                         String id = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
                         String hasPhone = c.getString(c.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
                         if (hasPhone.equalsIgnoreCase("1")) {
@@ -126,27 +130,4 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startPickingContact();
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
-    }
 }

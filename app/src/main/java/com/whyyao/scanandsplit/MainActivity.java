@@ -28,6 +28,7 @@ import com.google.android.gms.vision.text.TextRecognizer;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.whyyao.scanandsplit.helpers.TextBlockParser;
 import com.whyyao.scanandsplit.models.Item;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void bindView(){
         mCam = (ImageButton) findViewById(R.id.cam_button);
-        mText = (TextView) findViewById(R.id.textview);
         mImage = (ImageView) findViewById(R.id.imageview);
     }
 
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void lunchCam(){
+    private void launchCam(){
         //check camera permission
         if((ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED)){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_STORAGE );
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_CAMERA:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    lunchCam();
+                    launchCam();
                 } else {
                     Snackbar mySnackbar = Snackbar.make(findViewById(R.id.main_layout),
                             "Camera permission is required to scan your receipt", Snackbar.LENGTH_LONG);
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             case  PERMISSIONS_REQUEST_STORAGE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    lunchCam();
+                    launchCam();
                 } else {
                     Snackbar mySnackbar = Snackbar.make(findViewById(R.id.main_layout),
                             "Storage permission is required to scan your receipt", Snackbar.LENGTH_LONG);
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CAMERA);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_STORAGE);
         }
     }
 
