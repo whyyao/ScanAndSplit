@@ -106,8 +106,6 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
                     Uri contactData = data.getData();
                     Cursor c = managedQuery(contactData, null, null, null, null);
                     if (c.moveToFirst()) {
-
-
                         String id = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
                         String hasPhone = c.getString(c.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
                         if (hasPhone.equalsIgnoreCase("1")) {
