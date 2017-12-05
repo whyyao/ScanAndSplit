@@ -6,6 +6,7 @@ package com.whyyao.scanandsplit.helpers;
 
 import android.app.ListActivity;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -30,6 +31,12 @@ import com.whyyao.scanandsplit.models.Contact;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+/**
+* Created by Chandler Forrest on 12/5/17.
+*/
+
+// https://stackoverflow.com/questions/12413159/android-contact-picker-with-checkbox/
+
 public class ContactPicker extends ListActivity implements OnClickListener {
 
     // List variables
@@ -38,9 +45,7 @@ public class ContactPicker extends ListActivity implements OnClickListener {
     public ListView myListView;
 
     FloatingActionButton save_button;
-    private TextView phone;
-    private String phoneNumber;
-    private Cursor cursor;
+    private ArrayList<Contact> contactList = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,26 +91,93 @@ public class ContactPicker extends ListActivity implements OnClickListener {
     }
 
     public void onClick(View src) {
-        Intent i;
-        switch (src.getId()) {
-            case R.id.save_selection:
+        long[] id = getListView().getCheckedItemIds();//  i get the checked contact_id instead of position
 
-                SparseBooleanArray selectedPositions = myListView
-                        .getCheckedItemPositions();
-                SparseBooleanArray checkedPositions = myListView
-                        .getCheckedItemPositions();
-                if (checkedPositions != null) {
-                    for (int k = 0; k < checkedPositions.size(); k++) {
-                        if (checkedPositions.valueAt(k)) {
-                            String name =
-                                    ((Cursor)myListView.getAdapter().getItem(k)).getString(1);
-                            Log.i("XXXX",name + " was selected");
-                        }
-                    }
-                }
-
-                break;
+        for (int i = 0; i < id.length; i++) {
+            contactList.add(getContact(id[i]));
         }
 
+        for (int i = 0; i < contactList.size(); i++) {
+            Log.i("Contact Info", contactList.get(i).getName() + ", " + contactList.get(i).getPhoneNo());
+        }
+
+        Intent pickContactIntent = new Intent();
+        pickContactIntent.putExtra("PICK_CONTACT", contactList);// Add checked phonenumber in intent and finish current activity.
+        setResult(RESULT_OK, pickContactIntent);
+        //finish();
     }
+
+    private Contact getContact(long id) {
+        String name = null;
+        String phone = null;
+        Cursor phoneCursor = null;
+        Cursor nameCursor = null;
+
+        phoneCursor = queryPhoneNumber(id);
+        if (phoneCursor == null || phoneCursor.getCount() == 0) {
+            // No valid number
+            return null;
+        } else if (phoneCursor.getCount() == 1) {
+            // only one number, call it.
+            phone = phoneCursor.getString(phoneCursor.getColumnIndex(Phone.NUMBER));
+        } else {
+            phoneCursor.moveToPosition(-1);
+            while (phoneCursor.moveToNext()) {
+                // Found super primary, call it.
+                phone = phoneCursor.getString(phoneCursor
+                        .getColumnIndex(Phone.NUMBER));
+                break;
+
+            }
+        }
+
+        nameCursor = queryPrimaryName(id);
+        if (nameCursor == null || nameCursor.getCount() == 0) {
+            // No valid name
+            return null;
+        } else if (nameCursor.getCount() == 1) {
+            // one primary name
+            name = nameCursor.getString(nameCursor.getColumnIndex(Phone.DISPLAY_NAME_PRIMARY));
+        } else {
+            // Somehow more primary names ??
+            // TODO: figure this out eventually...
+        }
+
+        return(new Contact(name, phone));
+    }
+
+    private Cursor queryPrimaryName(long contactId) {
+        ContentResolver cr = getContentResolver();
+        Uri baseUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI,
+                contactId);
+        Uri dataUri = Uri.withAppendedPath(baseUri,
+                ContactsContract.Contacts.Data.CONTENT_DIRECTORY);
+        Cursor c = cr.query(dataUri, new String[] {Phone._ID, Phone.DISPLAY_NAME_PRIMARY,
+                        Phone.IS_SUPER_PRIMARY, ContactsContract.RawContacts.ACCOUNT_TYPE, Phone.TYPE,
+                        Phone.LABEL }, ContactsContract.Contacts.Data.MIMETYPE + "=?",
+                new String[] { Phone.CONTENT_ITEM_TYPE }, null);
+        if (c != null && c.moveToFirst()) {
+            return c;
+        }
+        return null;
+    }
+
+
+    private Cursor queryPhoneNumber(long contactId) {
+        ContentResolver cr = getContentResolver();
+        Uri baseUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI,
+                contactId);
+        Uri dataUri = Uri.withAppendedPath(baseUri,
+                ContactsContract.Contacts.Data.CONTENT_DIRECTORY);
+
+        Cursor c = cr.query(dataUri, new String[] { Phone._ID, Phone.NUMBER,
+                        Phone.IS_SUPER_PRIMARY, ContactsContract.RawContacts.ACCOUNT_TYPE, Phone.TYPE,
+                        Phone.LABEL }, ContactsContract.Contacts.Data.MIMETYPE + "=?",
+                new String[] { Phone.CONTENT_ITEM_TYPE }, null);
+        if (c != null && c.moveToFirst()) {
+            return c;
+        }
+        return null;
+    }
+
 }
