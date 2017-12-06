@@ -4,7 +4,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -20,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.whyyao.scanandsplit.R;
 import com.whyyao.scanandsplit.adapters.ContactsPagerAdapter;
@@ -36,8 +40,7 @@ import java.util.HashMap;
 public class InteractiveReceiptActivity extends AppCompatActivity implements View.OnClickListener {
 
     public ArrayList<Item> items;
-    private ArrayList<Contact> contacts;
-    private HashMap<Item, Integer> itemMap;
+    private ArrayList<Contact> contactsArray;
 
     private FloatingActionButton mFAB;
     private Toolbar mToolbar;
@@ -45,9 +48,8 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     private ViewPager mViewPager;
     private ContactsPagerAdapter pagerAdapter;
 
-    private final int ACTIVITY_PICK_CONTACT = 1;
+    private final int PICK_CONTACT = 1;
     private final int PERMISSION_PICK_CONTACT = 2;
-    private final int CALCULATION = 3;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,9 +70,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     private void init(){
         Intent intent = getIntent();
         items = intent.getParcelableArrayListExtra("Items");
-
-        itemMap = new HashMap<>();
-        contacts = new ArrayList<Contact>();
+        contactsArray = new ArrayList<Contact>();
 
         mFAB.setOnClickListener(this);
         mToolbar.setTitle("Picking Shoppers");
@@ -104,9 +104,9 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         switch(viewId) {
             case R.id.fab:
                 Log.d("taggg","pressed");
-                contacts = pagerAdapter.updateContacts();
+                contactsArray = pagerAdapter.updateContacts();
                 Intent intent = new Intent(InteractiveReceiptActivity.this, CalculationActivity.class);
-                intent.putParcelableArrayListExtra("contacts", contacts);
+                intent.putParcelableArrayListExtra("contacts", contactsArray);
                 startActivity(intent);
         }
     }
@@ -124,26 +124,55 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     }
 
     protected void pickContacts(){
-        Intent intent = new Intent(InteractiveReceiptActivity.this, ContactPickerActivity.class);
-        startActivityForResult(intent, ACTIVITY_PICK_CONTACT);
+        Intent intent = new Intent (Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(intent, PICK_CONTACT);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case (ACTIVITY_PICK_CONTACT):
-                if (resultCode == Activity.RESULT_OK) {
-                    contacts = data.getParcelableArrayListExtra("CONTACTS");
-                    for(int i =0;i<contacts.size(); i++){
-                        addTap(contacts.get(i));
+            case (PICK_CONTACT):
+                if (resultCode == RESULT_OK) {
+                    Uri contactData = data.getData();
+                    Cursor c = managedQuery(contactData, null, null, null, null);
+                    Contact mContact = grabContactInfo(c);
+                    // Checking if the contact is already displayed
+                    if (contactsArray != null) {
+                        for (int i = 0; i < contactsArray.size(); i++) {
+                            if (contactsArray.get(i).getName().equals(mContact.getName())
+                                    && contactsArray.get(i).getPhoneNo().equals(mContact.getPhoneNo())) {
+                                Toast.makeText(this, "Contact already added", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
                     }
+                    contactsArray.add(mContact);
+                    addTap(mContact);
+                    break;
                 }
-                break;
             case (RESULT_CANCELED):
                 break;
         }
-        //makeFakeData();
+    }
+
+    private Contact grabContactInfo(Cursor c) {
+        String mName = null;
+        String mNumber = null;
+        if (c.moveToFirst()) {
+            String id = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
+            String hasPhone = c.getString(c.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+            if (hasPhone.equalsIgnoreCase("1")) {
+                Cursor phones = getContentResolver().query(
+                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + id,
+                        null, null);
+                phones.moveToFirst();
+                mNumber = phones.getString(phones.getColumnIndex("data1"));
+            }
+            mName = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+        }
+        return (new Contact(mName, mNumber));
     }
 
     @Override
@@ -168,3 +197,5 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         }
     }
 }
+
+
