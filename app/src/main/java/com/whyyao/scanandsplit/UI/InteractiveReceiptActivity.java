@@ -1,34 +1,25 @@
-package com.whyyao.scanandsplit;
+package com.whyyao.scanandsplit.UI;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.style.TtsSpan;
-import android.util.FloatProperty;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import com.google.android.gms.vision.text.Text;
-import com.whyyao.scanandsplit.helpers.ContactPicker;
-import com.whyyao.scanandsplit.helpers.ContactPicker;
+import com.whyyao.scanandsplit.R;
+import com.whyyao.scanandsplit.adapters.ItemListAdapter;
 import com.whyyao.scanandsplit.models.Contact;
 import com.whyyao.scanandsplit.models.Item;
 
@@ -40,12 +31,13 @@ import java.util.HashMap;
  */
 
 public class InteractiveReceiptActivity extends AppCompatActivity implements View.OnClickListener {
-    private ListView list;
+    private RecyclerView itemList;
     private ArrayList<Item> items;
     private HashMap<Item, Integer> itemMap;
     private final int PICK_CONTACT = 2;
     private FloatingActionButton mButton;
     private ArrayList<Contact> contacts;
+    private ItemListAdapter mAdapter;
     private final int REQUEST_CODE_PICK_CONTACT = 1;
     private final int CALCULATION = 3;
 
@@ -57,13 +49,10 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         itemMap = new HashMap<>();
         items = intent.getParcelableArrayListExtra("Items");
         setContentView(R.layout.activity_list_view);
-        TextView testing = (TextView) findViewById(R.id.text_view_test);
-        String huge_String = "";
-        for (int i = 0; i < items.size(); i++) {
-            huge_String = huge_String + "\n" + items.get(i).toString();
-            itemMap.put(items.get(i), 0);
-        }
-        testing.setText(huge_String);
+        itemList = (RecyclerView)  findViewById(R.id.rv_item_list);
+        mAdapter = new ItemListAdapter(items);
+        itemList.setLayoutManager(new LinearLayoutManager(this));
+        itemList.setAdapter(mAdapter);
         mButton = (FloatingActionButton) findViewById(R.id.add_contact);
         mButton.setOnClickListener(this);
     }
@@ -72,7 +61,6 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         int viewId = view.getId();
         switch(viewId) {
             case R.id.add_contact:
-
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
                     pickContacts();
                 } else {

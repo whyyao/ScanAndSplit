@@ -1,4 +1,4 @@
-package com.whyyao.scanandsplit.helpers;
+package com.whyyao.scanandsplit.UI;
 
 /**
  * Created by Chandler on 12/5/17.

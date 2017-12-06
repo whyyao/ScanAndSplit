@@ -1,14 +1,10 @@
-package com.whyyao.scanandsplit.helpers;
+package com.whyyao.scanandsplit.core;
 
-import android.app.PendingIntent;
 import android.graphics.Point;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.android.gms.vision.text.TextBlock;
 import com.whyyao.scanandsplit.models.Item;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
