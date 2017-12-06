@@ -32,9 +32,9 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
     ArrayList<Contact> mContacts;
     Map<Item, Integer> mItemMap;
 
+    // get real data from intent
+
     @Override
-    // Interactive Recepit Activity's makeFakeData() method is passing control to this
-    // I'll let you figure out what to do with itent's data
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculation);
