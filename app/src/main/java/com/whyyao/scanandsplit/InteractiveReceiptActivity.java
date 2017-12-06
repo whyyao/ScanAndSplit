@@ -117,6 +117,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         Contact c2 = new Contact("Chan", "(111) 111-1111");
         Contact c3 = new Contact("Yao", "(222) 222-2222");
         Contact c4 = new Contact("Trist", "(333) 333-3333");
+
         // Adding item 1
         addItemToContact(c1, 0);
         addItemToContact(c2, 0);
