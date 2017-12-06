@@ -18,6 +18,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.style.TtsSpan;
 import android.util.FloatProperty;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;

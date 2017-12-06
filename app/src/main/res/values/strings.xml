@@ -5,4 +5,6 @@
         <item>iPhone</item>
         <item>Max OS X</item>
     </string-array>
+    <string name="clear_contacts"> Clear Selection</string>
+    <string name="search_contacts"> Search </string>
 </resources>

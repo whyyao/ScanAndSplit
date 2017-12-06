@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/clear_contacts"
+        android:title="@string/clear_contacts"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/search_contacts"
+        android:title="@string/search_contacts"
+        app:showAsAction="ifRoom"/>
+</menu>

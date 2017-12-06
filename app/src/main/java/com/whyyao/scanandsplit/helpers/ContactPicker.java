@@ -4,6 +4,9 @@ package com.whyyao.scanandsplit.helpers;
  * Created by Chandler on 12/5/17.
  */
 
+// TODO: Make this look pretty. Search functionality. Go back ability!
+
+
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.ContentResolver;
@@ -17,6 +20,8 @@ import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -53,6 +58,7 @@ public class ContactPicker extends ListActivity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_picker);
 
+
         // Initializing the buttons according to their ID
         save_button = (FloatingActionButton) findViewById(R.id.save_selection);
 
@@ -68,12 +74,18 @@ public class ContactPicker extends ListActivity implements OnClickListener {
                 mCursor,
                 Contacts = new String[] { ContactsContract.Contacts.DISPLAY_NAME },
                 to = new int[] { android.R.id.text1 });
-
         setListAdapter(adapter);
         myListView = getListView();
         myListView.setItemsCanFocus(false);
         myListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+    }
 
+    // Setting the menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.contact_picker_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     private Cursor getContacts() {

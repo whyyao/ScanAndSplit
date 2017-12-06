@@ -98,11 +98,12 @@ public class TextBlockParser {
             char c = s.charAt(i);
             String temp = null;
             if (c == '\n') {
-                temp = s.substring(position, i);
+                temp = s.substring(position, i).replaceAll("(\\r|\\n)", "");
+                System.out.println(temp);
                 result.add(temp);
                 position = i;
             } else if (i == s.length()-1) {
-                temp = s.substring(position, s.length());
+                temp = s.substring(position, s.length()).replaceAll("(\\r|\\n)", "");
                 result.add(temp);
             }
         }
