@@ -27,6 +27,23 @@ public class Contact implements Parcelable {
         items = new ArrayList<>();
     }
 
+    public void removeItem(Item item){
+        if (! items.contains(item)){
+            return;
+        }
+        else{
+            for (int i =0 ; i< items.size(); i++){
+                if(items.get(i).equals(item)){
+                    items.remove(i);
+                    i--;
+                }
+            }
+        }
+    }
+
+    public void setItemList(List<Item> item){
+        items = item;
+    }
 
     public void addItem(Item item){
         items.add(item);

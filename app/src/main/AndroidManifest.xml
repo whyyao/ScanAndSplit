@@ -34,15 +34,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".UI.InteractiveReceiptActivity">
+        <activity android:name=".UI.InteractiveReceiptActivity"
+            android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
         <activity android:name=".UI.CalculationActivity" />
-
-        <activity android:name=".UI.ContactPicker"
-            android:parentActivityName=".UI.InteractiveReceiptActivity">
-
-        </activity>
 
 
         <meta-data

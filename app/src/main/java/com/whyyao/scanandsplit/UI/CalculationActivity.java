@@ -54,6 +54,7 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         double mSum;
+        mMoney = new ArrayList<>();
         for (Contact c : mContacts) {
             mSum = 0;
             for (Item i : c.getItemList()) {

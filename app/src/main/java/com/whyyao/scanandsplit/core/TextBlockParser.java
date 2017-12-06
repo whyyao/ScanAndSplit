@@ -16,17 +16,8 @@ import static java.lang.Math.abs;
 
 public class TextBlockParser {
 
-
-    private
-        SparseArray<TextBlock> codedItems;
-        ArrayList<Item> itemObjects;
-
-    public TextBlockParser() {
-        itemObjects = new ArrayList<>();
-    }
-
-
-    /*  Assumes that the two longest rectangles contain the relevant data.
+    /*
+        Assumes that the two longest rectanges contain the relevant data.
         Representation
         |  ITEM  |   | $$ |
         |  ITEM  |   | $$ |
@@ -34,6 +25,12 @@ public class TextBlockParser {
         |  ITEM  |   | $$ |
      */
 
+    private SparseArray<TextBlock> codedItems;
+    private ArrayList<Item> itemObjects;
+
+    public TextBlockParser() {
+        itemObjects = new ArrayList<>();
+    }
     public ArrayList<Item> parse(SparseArray<TextBlock> codedItems) {
         ArrayList<Integer> boxHeights = new ArrayList<Integer>();
 
@@ -93,12 +90,12 @@ public class TextBlockParser {
             char c = s.charAt(i);
             String temp = null;
             if (c == '\n') {
-                temp = s.substring(position, i).replaceAll("(\\r|\\n|$)", "");
-                // System.out.println(temp);
+                temp = s.substring(position, i).replaceAll("(\\r|\\n)", "");
+                System.out.println(temp);
                 result.add(temp);
                 position = i;
             } else if (i == s.length()-1) {
-                temp = s.substring(position, s.length()).replaceAll("(\\r|\\n|$)", "");
+                temp = s.substring(position, s.length()).replaceAll("(\\r|\\n)", "");
                 result.add(temp);
             }
         }
@@ -108,7 +105,7 @@ public class TextBlockParser {
 
     private void ArrayListPrinter(ArrayList<String> a) {
         for (int i = 0; i < a.size(); i++) {
-            //System.out.println(a.get(i));
+            System.out.println(a.get(i));
         }
     }
 

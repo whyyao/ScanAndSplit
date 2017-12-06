@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init(){
+        parser = new TextBlockParser();
         mCam.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
