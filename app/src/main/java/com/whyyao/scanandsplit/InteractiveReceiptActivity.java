@@ -139,7 +139,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         extras.putSerializable("ItemsMap",itemMap);
         intent.putExtras(extras);
 
-        startActivityForResult(intent, CALCULATION);
+        // startActivityForResult(intent, CALCULATION);
     }
 
     // Takes in a contact and the item location within the items ArrayList
