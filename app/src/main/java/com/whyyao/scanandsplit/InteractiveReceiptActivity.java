@@ -1,6 +1,7 @@
 package com.whyyao.scanandsplit;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import com.google.android.gms.vision.text.Text;
 import com.whyyao.scanandsplit.helpers.ContactPicker;
 import com.whyyao.scanandsplit.helpers.ContactPicker;
+import com.whyyao.scanandsplit.models.Contact;
 import com.whyyao.scanandsplit.models.Item;
 
 import java.util.ArrayList;
@@ -39,29 +41,24 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     private ArrayList<Item> items;
     private final int PICK_CONTACT = 2;
     private FloatingActionButton mButton;
-    private final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+    private ArrayList<Contact> contacts;
+    private final int REQUEST_CODE_PICK_CONTACT = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
+        contacts = new ArrayList<>();
         items = intent.getParcelableArrayListExtra("Items");
         setContentView(R.layout.activity_list_view);
         TextView testing = (TextView) findViewById(R.id.text_view_test);
         String huge_String = "";
         for (int i = 0; i < items.size(); i++) {
-            huge_String = huge_String + items.get(i).toString();
+            huge_String = huge_String + "\n" + items.get(i).toString();
         }
         testing.setText(huge_String);
         mButton = (FloatingActionButton) findViewById(R.id.add_contact);
         mButton.setOnClickListener(this);
-        /*
-        for (int i = 0; i < 5; i++){
-            Item temp = new Item("Item" + i, i + 5);
-            items.add(temp.toString());
-        }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, items);
-        list.setAdapter(arrayAdapter); */
     }
 
     public void onClick(View view){
@@ -91,43 +88,20 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         }
     }
 
-
-
     protected void pickContacts(){
         Intent intent = new Intent(InteractiveReceiptActivity.this, ContactPicker.class);
-        startActivity(intent);
-        /*
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
-        startActivityForResult(intent, PICK_CONTACT); */
+        startActivityForResult(intent, REQUEST_CODE_PICK_CONTACT);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case (PICK_CONTACT):
-                if (resultCode == RESULT_OK) {
-
-                    Uri contactData = data.getData();
-                    Cursor c = managedQuery(contactData, null, null, null, null);
-                    if (c.moveToFirst()) {
-                        String id = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
-                        String hasPhone = c.getString(c.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
-                        if (hasPhone.equalsIgnoreCase("1")) {
-                            Cursor phones = getContentResolver().query(
-                                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + id,
-                                    null, null);
-                            phones.moveToFirst();
-                            String cNumber = phones.getString(phones.getColumnIndex("data1"));
-                            System.out.println("number is:" + cNumber);
-                        }
-                        String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                        System.out.println("name is " + name);
-                    }
+            case (REQUEST_CODE_PICK_CONTACT):
+                if (resultCode == Activity.RESULT_OK) {
+                    contacts = data.getParcelableArrayListExtra("CONTACTS");
                 }
+                break;
         }
     }
-
 }

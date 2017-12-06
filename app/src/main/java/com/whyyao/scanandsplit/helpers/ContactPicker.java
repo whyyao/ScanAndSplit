@@ -4,6 +4,7 @@ package com.whyyao.scanandsplit.helpers;
  * Created by Chandler on 12/5/17.
  */
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -91,20 +92,29 @@ public class ContactPicker extends ListActivity implements OnClickListener {
     }
 
     public void onClick(View src) {
-        long[] id = getListView().getCheckedItemIds();//  i get the checked contact_id instead of position
+        int viewID = src.getId();
+        switch(viewID){
+            case R.id.save_selection:
+                long[] id = getListView().getCheckedItemIds();//  i get the checked contact_id instead of position
 
-        for (int i = 0; i < id.length; i++) {
-            contactList.add(getContact(id[i]));
+                for (int i = 0; i < id.length; i++) {
+                    contactList.add(getContact(id[i]));
+                }
+
+                for (int i = 0; i < contactList.size(); i++) {
+                    Log.i("Contact Info", contactList.get(i).getName() + ", " + contactList.get(i).getPhoneNo());
+                }
+
+                Intent pickContactIntent = new Intent();
+                // TODO: figure out why this is becoming null
+                pickContactIntent.putParcelableArrayListExtra("CONTACTS", contactList); // Add checked contacts in intent and finish current activity.
+                setResult(Activity.RESULT_OK, pickContactIntent);
+                if (pickContactIntent.getParcelableArrayListExtra("CONTACTS") != null) {
+                    System.out.println("Not null");
+                }
+                finish();
+
         }
-
-        for (int i = 0; i < contactList.size(); i++) {
-            Log.i("Contact Info", contactList.get(i).getName() + ", " + contactList.get(i).getPhoneNo());
-        }
-
-        Intent pickContactIntent = new Intent();
-        pickContactIntent.putExtra("PICK_CONTACT", contactList);// Add checked phonenumber in intent and finish current activity.
-        setResult(RESULT_OK, pickContactIntent);
-        //finish();
     }
 
     private Contact getContact(long id) {
