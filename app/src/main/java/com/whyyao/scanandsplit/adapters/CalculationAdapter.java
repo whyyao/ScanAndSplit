@@ -52,4 +52,11 @@ public class CalculationAdapter extends RecyclerView.Adapter<CalculationAdapter.
             tv_amount = (TextView) view.findViewById(R.id.textViewAmount);
         }
     }
+
+    public void clearAdapter() {
+        int size = mContacts.size();
+        mContacts.clear();
+        mMoney.clear();
+        notifyItemRangeRemoved(0, size);
+    }
 }
