@@ -27,6 +27,9 @@ public class Contact implements Parcelable {
         items = new ArrayList<>();
     }
 
+    public void setItemList(List<Item> item){
+        items = item;
+    }
 
     public void addItem(Item item){
         items.add(item);

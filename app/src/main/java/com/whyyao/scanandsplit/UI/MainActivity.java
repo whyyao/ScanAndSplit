@@ -117,13 +117,6 @@ public class MainActivity extends AppCompatActivity {
         }else{
             Frame frame = new Frame.Builder().setBitmap(bitmap).build();
             items = textRecognizer.detect(frame);
-//            StringBuilder stringBuilder = new StringBuilder();
-//            for (int i = 0; i < items.size(); ++i) {
-//                TextBlock item = items.valueAt(i);
-//                stringBuilder.append(item.getValue());
-//                stringBuilder.append("\n");
-//            }
-            // mText.setText(stringBuilder);
         }
         return items;
     }

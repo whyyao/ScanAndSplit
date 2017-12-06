@@ -8,17 +8,22 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 
 import com.whyyao.scanandsplit.R;
+import com.whyyao.scanandsplit.adapters.ContactsPagerAdapter;
 import com.whyyao.scanandsplit.adapters.ItemListAdapter;
 import com.whyyao.scanandsplit.models.Contact;
 import com.whyyao.scanandsplit.models.Item;
@@ -32,7 +37,7 @@ import java.util.HashMap;
 
 public class InteractiveReceiptActivity extends AppCompatActivity implements View.OnClickListener {
     private RecyclerView itemList;
-    private ArrayList<Item> items;
+    public ArrayList<Item> items;
     private HashMap<Item, Integer> itemMap;
     private final int PICK_CONTACT = 2;
     private FloatingActionButton mButton;
@@ -40,6 +45,10 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     private ItemListAdapter mAdapter;
     private final int REQUEST_CODE_PICK_CONTACT = 1;
     private final int CALCULATION = 3;
+    private Toolbar mToolbar;
+    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
+    private ContactsPagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,12 +58,38 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         itemMap = new HashMap<>();
         items = intent.getParcelableArrayListExtra("Items");
         setContentView(R.layout.activity_list_view);
-        itemList = (RecyclerView)  findViewById(R.id.rv_item_list);
-        mAdapter = new ItemListAdapter(items);
-        itemList.setLayoutManager(new LinearLayoutManager(this));
-        itemList.setAdapter(mAdapter);
+        //itemList = (RecyclerView)  findViewById(R.id.rv_item_list);
+        //mAdapter = new ItemListAdapter(items);
+       // itemList.setLayoutManager(new LinearLayoutManager(this));
+       // itemList.setAdapter(mAdapter);
         mButton = (FloatingActionButton) findViewById(R.id.add_contact);
         mButton.setOnClickListener(this);
+        mTabLayout = (TabLayout) findViewById(R.id.tabs);
+        mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle("Picking Shoppers");
+        setSupportActionBar(mToolbar);
+
+        pagerAdapter = new ContactsPagerAdapter(getSupportFragmentManager());
+
+        Contact allItem = new Contact("TOTAL","");
+        allItem.setItemList(items);
+
+        mViewPager.setAdapter(pagerAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);
+        mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        addTap(allItem);
+
+
+    }
+
+    private void addTap(Contact contact){
+        Fragment myFrag = new ContactFragment().newInstance();
+        Bundle args = new Bundle();
+        args.putParcelableArrayList("items",items);
+        myFrag.setArguments(args);
+        pagerAdapter.addFrag(myFrag, contact);
+        pagerAdapter.notifyDataSetChanged();
     }
 
     public void onClick(View view){
@@ -95,47 +130,50 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
             case (REQUEST_CODE_PICK_CONTACT):
                 if (resultCode == Activity.RESULT_OK) {
                     contacts = data.getParcelableArrayListExtra("CONTACTS");
+                    for(int i =0;i<contacts.size(); i++){
+                        addTap(contacts.get(i));
+                    }
                 }
                 break;
         }
-        makeFakeData();
+        //makeFakeData();
     }
 
     // TODO: Use parts of this function to pass actual data!
-    private void makeFakeData() {
-        Contact c1 = new Contact("Jeff", "(000) 000-0000");
-        Contact c2 = new Contact("Chan", "(111) 111-1111");
-        Contact c3 = new Contact("Yao", "(222) 222-2222");
-        Contact c4 = new Contact("Trist", "(333) 333-3333");
-
-        // Adding item 1
-        addItemToContact(c1, 0);
-        addItemToContact(c2, 0);
-        addItemToContact(c1, 1);
-        addItemToContact(c1, 2);
-        addItemToContact(c2, 2);
-        addItemToContact(c3, 3);
-        addItemToContact(c4, 4);
-        addItemToContact(c1, 5);
-        addItemToContact(c2, 5);
-        addItemToContact(c3, 5);
-        addItemToContact(c4, 5);
-
-        Intent intent = new Intent(InteractiveReceiptActivity.this, CalculationActivity.class);
-        intent.putParcelableArrayListExtra("Items", items);
-        intent.putParcelableArrayListExtra("Contacts", contacts);
-
-        Bundle extras = new Bundle();
-        extras.putSerializable("ItemsMap",itemMap);
-        intent.putExtras(extras);
-
-        // startActivityForResult(intent, CALCULATION);
-    }
-
-    // Takes in a contact and the item location within the items ArrayList
-    private void addItemToContact(Contact c, int location) {
-        Item i = items.get(location);
-        c.addItem(i);
-        itemMap.put(i, itemMap.get(i) + 1);
-    }
+//    private void makeFakeData() {
+//        Contact c1 = new Contact("Jeff", "(000) 000-0000");
+//        Contact c2 = new Contact("Chan", "(111) 111-1111");
+//        Contact c3 = new Contact("Yao", "(222) 222-2222");
+//        Contact c4 = new Contact("Trist", "(333) 333-3333");
+//
+//        // Adding item 1
+//        addItemToContact(c1, 0);
+//        addItemToContact(c2, 0);
+//        addItemToContact(c1, 1);
+//        addItemToContact(c1, 2);
+//        addItemToContact(c2, 2);
+//        addItemToContact(c3, 3);
+//        addItemToContact(c4, 4);
+//        addItemToContact(c1, 5);
+//        addItemToContact(c2, 5);
+//        addItemToContact(c3, 5);
+//        addItemToContact(c4, 5);
+//
+//        Intent intent = new Intent(InteractiveReceiptActivity.this, CalculationActivity.class);
+//        intent.putParcelableArrayListExtra("Items", items);
+//        intent.putParcelableArrayListExtra("Contacts", contacts);
+//
+//        Bundle extras = new Bundle();
+//        extras.putSerializable("ItemsMap",itemMap);
+//        intent.putExtras(extras);
+//
+//        // startActivityForResult(intent, CALCULATION);
+//    }
+//
+//    // Takes in a contact and the item location within the items ArrayList
+//    private void addItemToContact(Contact c, int location) {
+//        Item i = items.get(location);
+//        c.addItem(i);
+//        itemMap.put(i, itemMap.get(i) + 1);
+//    }
 }

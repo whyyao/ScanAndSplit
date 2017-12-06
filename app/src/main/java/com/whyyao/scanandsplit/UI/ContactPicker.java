@@ -50,7 +50,7 @@ public class ContactPicker extends ListActivity implements OnClickListener {
     public int[] to = {};
     public ListView myListView;
 
-    FloatingActionButton save_button;
+    private FloatingActionButton save_button;
     private ArrayList<Contact> contactList = new ArrayList<>();
 
     @Override
@@ -64,7 +64,6 @@ public class ContactPicker extends ListActivity implements OnClickListener {
 
         // Defines listeners for the buttons
         save_button.setOnClickListener(this);
-
         Cursor mCursor = getContacts();
         startManagingCursor(mCursor);
 
