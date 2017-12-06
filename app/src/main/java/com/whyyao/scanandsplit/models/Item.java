@@ -37,7 +37,7 @@ public class Item implements Parcelable {
         return price;
     }
     public void print() {System.out.println(name + ' ' + price);}
-    public String toString() {return "Item: " + getName() + "\t Price: " + getPrice();}
+    public String toString() {return "Item: " + getName() + "   Price: " + getPrice();}
 
 
     protected Item(Parcel in) {
