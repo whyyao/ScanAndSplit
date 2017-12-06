@@ -33,13 +33,13 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
     Map<Item, Integer> mItemMap;
 
     @Override
-    // Interactive Recepit Activity's makeFakeData() method is passing control to this
-    // I'll let you figure out what to do with itent's data
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculation);
         calculate = (FloatingActionButton) findViewById(R.id.calculate_button);
-        // TODO: get mContacts and mItemMap from intent
+        Intent intent = getIntent();
+        mContacts = intent.getParcelableArrayListExtra("Contacts");
+        mItemMap = (Map<Item, Integer>) intent.getSerializableExtra("ItemsMap");
         double mSum;
         for (Contact c : mContacts) {
             mSum = 0;

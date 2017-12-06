@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,26 +8,30 @@
     tools:context="com.whyyao.scanandsplit.UI.CalculationActivity">
 
     <TextView
-        android:id="@+id/textViewC"
+        android:id="@+id/textViewTotal"
         android:layout_width="180dp"
-        android:layout_height="match_parent"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textViewC2"
+        android:layout_height="wrap_content"
+        android:text="Total"
+        app:layout_constraintEnd_toStartOf="@+id/textViewTotal2"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewC2"
+        android:id="@+id/textViewTotal2"
         android:layout_width="180dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textViewC"
+        app:layout_constraintStart_toEndOf="@+id/textViewTotal"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewCalculation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textViewTotal" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/calculate_button"
