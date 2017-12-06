@@ -10,10 +10,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
 import android.view.View;
 
 import com.whyyao.scanandsplit.R;
+import com.whyyao.scanandsplit.adapters.CalculationAdapter;
 import com.whyyao.scanandsplit.models.Contact;
 import com.whyyao.scanandsplit.models.Item;
 
@@ -26,20 +29,30 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
     private final int PERMISSIONS_REQUEST_SEND_SMS = 0;
     private String phoneNo;
     private String message;
-    private ArrayList<Double> mMoney;
-    private FloatingActionButton calculate;
+    private CalculationAdapter mAdapter;
+    public ArrayList<Double> mMoney;
+    public FloatingActionButton calculate;
 
-    private ArrayList<Contact> mContacts;
-    private Map<Item, Integer> mItemMap;
-
-    // get real data from intent
+    public ArrayList<Contact> mContacts;
+    public Map<Item, Integer> mItemMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculation);
         calculate = (FloatingActionButton) findViewById(R.id.calculate_button);
-        // TODO: get mContacts and mItemMap from intent
+        Intent intent = getIntent();
+        mContacts = intent.getParcelableArrayListExtra("Contacts");
+        mItemMap = (Map<Item, Integer>) intent.getSerializableExtra("ItemsMap");
+        mMoney = new ArrayList<>();
+        initViews();
+    }
+
+    private void initViews() {
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerViewCalculation);
+        recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
         double mSum;
         mMoney = new ArrayList<>();
         for (Contact c : mContacts) {
@@ -48,8 +61,9 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
                 mSum += i.getPrice() / mItemMap.get(i);
             }
             mMoney.add(mSum);
-            // TODO: put c.getName and String.format("%.2f", mSum) in textViews
         }
+        mAdapter = new CalculationAdapter(mContacts, mMoney);
+        recyclerView.setAdapter(mAdapter);
     }
 
     protected void sendSMSMessage() {
@@ -100,5 +114,12 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
         public void onClick(View v) {
             ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.SEND_SMS}, PERMISSIONS_REQUEST_SEND_SMS);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mAdapter.clearAdapter();
+        mAdapter.notifyDataSetChanged();
     }
 }
