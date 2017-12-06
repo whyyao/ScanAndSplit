@@ -40,7 +40,7 @@
         </activity>
         <activity android:name=".UI.CalculationActivity" />
 
-        <activity android:name=".UI.ContactPicker"
+        <activity android:name=".UI.ContactPickerActivity"
             android:parentActivityName=".UI.InteractiveReceiptActivity">
 
         </activity>

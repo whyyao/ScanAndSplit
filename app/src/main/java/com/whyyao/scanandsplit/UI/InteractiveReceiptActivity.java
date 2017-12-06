@@ -13,18 +13,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 
 import com.whyyao.scanandsplit.R;
 import com.whyyao.scanandsplit.adapters.ContactsPagerAdapter;
-import com.whyyao.scanandsplit.adapters.ItemListAdapter;
 import com.whyyao.scanandsplit.models.Contact;
 import com.whyyao.scanandsplit.models.Item;
 
@@ -55,7 +50,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_view);
+        setContentView(R.layout.activity_interactive_receipt);
         bindViews();
         init();
         setupViewPager();
@@ -136,7 +131,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     }
 
     protected void pickContacts(){
-        Intent intent = new Intent(InteractiveReceiptActivity.this, ContactPicker.class);
+        Intent intent = new Intent(InteractiveReceiptActivity.this, ContactPickerActivity.class);
         startActivityForResult(intent, ACTIVITY_PICK_CONTACT);
     }
 

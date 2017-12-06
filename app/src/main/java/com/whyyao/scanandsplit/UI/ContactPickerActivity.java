@@ -43,7 +43,7 @@ import java.util.ArrayList;
 
 // https://stackoverflow.com/questions/12413159/android-contact-picker-with-checkbox/
 
-public class ContactPicker extends ListActivity implements OnClickListener {
+public class ContactPickerActivity extends ListActivity implements OnClickListener {
 
     // List variables
     public String[] Contacts = {};
