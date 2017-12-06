@@ -34,7 +34,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".UI.InteractiveReceiptActivity">
+        <activity android:name=".UI.InteractiveReceiptActivity"
+            android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
         <activity android:name=".UI.CalculationActivity" />

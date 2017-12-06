@@ -24,13 +24,13 @@ import java.util.Map;
 public class CalculationActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final int PERMISSIONS_REQUEST_SEND_SMS = 0;
-    String phoneNo;
-    String message;
-    ArrayList<Double> mMoney;
-    FloatingActionButton calculate;
+    private String phoneNo;
+    private String message;
+    private ArrayList<Double> mMoney;
+    private FloatingActionButton calculate;
 
-    ArrayList<Contact> mContacts;
-    Map<Item, Integer> mItemMap;
+    private ArrayList<Contact> mContacts;
+    private Map<Item, Integer> mItemMap;
 
     // get real data from intent
 
@@ -41,6 +41,7 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
         calculate = (FloatingActionButton) findViewById(R.id.calculate_button);
         // TODO: get mContacts and mItemMap from intent
         double mSum;
+        mMoney = new ArrayList<>();
         for (Contact c : mContacts) {
             mSum = 0;
             for (Item i : c.getItemList()) {
@@ -49,8 +50,6 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
             mMoney.add(mSum);
             // TODO: put c.getName and String.format("%.2f", mSum) in textViews
         }
-
-
     }
 
     protected void sendSMSMessage() {
