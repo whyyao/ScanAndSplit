@@ -39,12 +39,14 @@ public class MainActivity extends AppCompatActivity {
     private final int PERMISSIONS_REQUEST_CAMERA = 0;
     private final int PERMISSIONS_REQUEST_STORAGE = 2;
     private final int REQUEST_IMAGE_CAPTURE = 1;
+    private final int INTERACTIVE_RECEIPT = 3;
     private ImageButton mCam;
     private TextView mText;
     private ImageView mImage;
     private Uri imageUri;
     private File imageFile;
     private TextBlockParser parser;
+    private ArrayList<Item> itemList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,16 +62,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init(){
-        parser = new TextBlockParser();
         mCam.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 Bitmap test = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.hbc_min);
-                ArrayList<Item> itemList = new ArrayList<>(parser.parse(scanText(test)));
+                itemList = new ArrayList<>(parser.parse(scanText(test)));
                 Intent intent = new Intent(MainActivity.this, InteractiveReceiptActivity.class);
                 intent.putExtra("Items", itemList);
                 startActivity(intent);
-                // todo: Uncomment this once we want to use the camera
+
+
+                // TODO: Uncomment this once we want to use the camera
                 // lunchCam();
             }
         });
@@ -91,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /* TODO: UNCOMMENT ONCE WE START USING THE CAMERA
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
@@ -107,23 +111,16 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-    }
+    } */
 
     private SparseArray<TextBlock> scanText(Bitmap bitmap){
         TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
         SparseArray<TextBlock> items = null;
         if (!textRecognizer.isOperational()) {
             Log.e("ERROR", "Dependency not available");
-        }else{
+        } else{
             Frame frame = new Frame.Builder().setBitmap(bitmap).build();
             items = textRecognizer.detect(frame);
-//            StringBuilder stringBuilder = new StringBuilder();
-//            for (int i = 0; i < items.size(); ++i) {
-//                TextBlock item = items.valueAt(i);
-//                stringBuilder.append(item.getValue());
-//                stringBuilder.append("\n");
-//            }
-            // mText.setText(stringBuilder);
         }
         return items;
     }

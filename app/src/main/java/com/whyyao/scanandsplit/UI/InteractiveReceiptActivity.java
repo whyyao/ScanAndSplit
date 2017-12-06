@@ -55,6 +55,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         itemList.setAdapter(mAdapter);
         mButton = (FloatingActionButton) findViewById(R.id.add_contact);
         mButton.setOnClickListener(this);
+        Log.e("items size", "" + items.size());
     }
 
     public void onClick(View view){
@@ -80,6 +81,8 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 pickContacts();
             }
+        } else if (requestCode == RESULT_CANCELED) {
+            return;
         }
     }
 
@@ -95,10 +98,12 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
             case (REQUEST_CODE_PICK_CONTACT):
                 if (resultCode == Activity.RESULT_OK) {
                     contacts = data.getParcelableArrayListExtra("CONTACTS");
+                    makeFakeData();
                 }
                 break;
+            case (RESULT_CANCELED):
+                break;
         }
-        makeFakeData();
     }
 
     // TODO: Use parts of this function to pass actual data!
@@ -137,5 +142,15 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         Item i = items.get(location);
         c.addItem(i);
         itemMap.put(i, itemMap.get(i) + 1);
+    }
+
+    // Should clear the adapter. That way duplicates aren't formed
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("OnDestroy Called");
+        mAdapter.clearAdapter();
+        mAdapter.notifyDataSetChanged();
+        items.clear();
     }
 }

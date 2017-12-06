@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.whyyao.scanandsplit.R;
 import com.whyyao.scanandsplit.models.Item;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
@@ -41,7 +42,7 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ViewHo
     public void onBindViewHolder(final ItemListAdapter.ViewHolder holder, final int position) {
         Item item = mItems.get(position);
         holder.itemName.setText(item.getName());
-        holder.itemPrice.setText(String.valueOf(item.getPrice()));
+        holder.itemPrice.setText("$" + String.valueOf(new DecimalFormat("#0.00").format(item.getPrice())));
     }
 
     @Override
@@ -49,4 +50,9 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ViewHo
         return mItems.size();
     }
 
+    public void clearAdapter() {
+        int size = this.mItems.size();
+        this.mItems.clear();
+        notifyItemRangeRemoved(0, size);
+    }
 }
