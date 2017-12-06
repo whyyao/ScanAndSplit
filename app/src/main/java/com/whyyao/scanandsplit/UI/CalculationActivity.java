@@ -1,7 +1,6 @@
-package com.whyyao.scanandsplit;
+package com.whyyao.scanandsplit.UI;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -14,6 +13,7 @@ import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.view.View;
 
+import com.whyyao.scanandsplit.R;
 import com.whyyao.scanandsplit.models.Contact;
 import com.whyyao.scanandsplit.models.Item;
 

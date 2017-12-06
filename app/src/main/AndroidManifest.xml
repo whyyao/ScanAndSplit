@@ -26,7 +26,7 @@
         </provider>
 
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".UI.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,13 +34,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".InteractiveReceiptActivity">
+        <activity android:name=".UI.InteractiveReceiptActivity">
 
         </activity>
-        <activity android:name=".CalculationActivity" />
+        <activity android:name=".UI.CalculationActivity" />
 
-        <activity android:name=".helpers.ContactPicker"
-            android:parentActivityName=".InteractiveReceiptActivity">
+        <activity android:name=".UI.ContactPicker"
+            android:parentActivityName=".UI.InteractiveReceiptActivity">
 
         </activity>
 
