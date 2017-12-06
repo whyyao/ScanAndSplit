@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
 import android.view.View;
+import android.widget.TextView;
 
 import com.whyyao.scanandsplit.R;
 import com.whyyao.scanandsplit.adapters.CalculationAdapter;
@@ -21,20 +22,21 @@ import com.whyyao.scanandsplit.models.Contact;
 import com.whyyao.scanandsplit.models.Item;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class CalculationActivity extends AppCompatActivity implements View.OnClickListener {
-
     private final int PERMISSIONS_REQUEST_SEND_SMS = 0;
     private String phoneNo;
     private String message;
     private CalculationAdapter mAdapter;
-    public ArrayList<Double> mMoney;
-    public FloatingActionButton calculate;
 
+    public double mTotal;
     public ArrayList<Contact> mContacts;
-    public Map<Item, Integer> mItemMap;
+    public ArrayList<Double> mMoney;
+    public Map<String, Integer> mItemMap;
+    public FloatingActionButton calculate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +44,9 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_calculation);
         calculate = (FloatingActionButton) findViewById(R.id.calculate_button);
         Intent intent = getIntent();
-        mContacts = intent.getParcelableArrayListExtra("Contacts");
-        mItemMap = (Map<Item, Integer>) intent.getSerializableExtra("ItemsMap");
+        mTotal = 0;
+        mContacts = intent.getParcelableArrayListExtra("contacts");
+        mItemMap = new HashMap<>();
         mMoney = new ArrayList<>();
         initViews();
     }
@@ -53,17 +56,38 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
+        prepareData();
+        mAdapter = new CalculationAdapter(mContacts, mMoney);
+        recyclerView.setAdapter(mAdapter);
+        TextView textView = (TextView) findViewById(R.id.textViewTotal2);
+        textView.setText(String.format(Locale.CANADA, "$%.2f", mTotal));
+    }
+
+    private void buildMap() {
+        int n;
+        for (Contact c : mContacts) {
+            for (Item i : c.getItemList()) {
+                if (mItemMap.containsKey(i.getName())) {
+                    n = mItemMap.get(i.getName());
+                    mItemMap.put(i.getName(), n + 1);
+                } else {
+                    mItemMap.put(i.getName(), 1);
+                    mTotal += i.getPrice();
+                }
+            }
+        }
+    }
+
+    private void prepareData() {
+        buildMap();
         double mSum;
-        mMoney = new ArrayList<>();
         for (Contact c : mContacts) {
             mSum = 0;
             for (Item i : c.getItemList()) {
-                mSum += i.getPrice() / mItemMap.get(i);
+                mSum += i.getPrice() / mItemMap.get(i.getName());
             }
             mMoney.add(mSum);
         }
-        mAdapter = new CalculationAdapter(mContacts, mMoney);
-        recyclerView.setAdapter(mAdapter);
     }
 
     protected void sendSMSMessage() {

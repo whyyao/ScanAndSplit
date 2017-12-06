@@ -28,7 +28,7 @@ public class CalculationAdapter extends RecyclerView.Adapter<CalculationAdapter.
 
     @Override
     public CalculationAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_layout_calculation, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_listitem, parent, false);
         return new ViewHolder(view);
     }
 
@@ -48,8 +48,8 @@ public class CalculationAdapter extends RecyclerView.Adapter<CalculationAdapter.
         TextView tv_amount;
         public ViewHolder(View view) {
             super(view);
-            tv_contact = (TextView) view.findViewById(R.id.textViewContact);
-            tv_amount = (TextView) view.findViewById(R.id.textViewAmount);
+            tv_contact = view.findViewById(R.id.tv_item_name);
+            tv_amount = view.findViewById(R.id.tv_item_price);
         }
     }
 
