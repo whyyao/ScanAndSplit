@@ -15,6 +15,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -41,7 +44,6 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private ContactsPagerAdapter pagerAdapter;
-    private Button mComfirmBtn;
 
     private final int ACTIVITY_PICK_CONTACT = 1;
     private final int PERMISSION_PICK_CONTACT = 2;
@@ -57,12 +59,10 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     }
 
     private void bindViews(){
-        mFAB = (FloatingActionButton) findViewById(R.id.add_contact);
-
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mComfirmBtn = (Button) findViewById(R.id.btn_confirm_calculation);
+        mFAB = (FloatingActionButton) findViewById(R.id.fab);
     }
 
     private void init(){
@@ -73,7 +73,6 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         contacts = new ArrayList<Contact>();
 
         mFAB.setOnClickListener(this);
-        mComfirmBtn.setOnClickListener(this);
         mToolbar.setTitle("Picking Shoppers");
         setSupportActionBar(mToolbar);
     }
@@ -101,17 +100,9 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     public void onClick(View view){
         int viewId = view.getId();
         switch(viewId) {
-            case R.id.add_contact:
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-                    pickContacts();
-                } else {
-                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS}, PERMISSION_PICK_CONTACT);
-                }
-                break;
-            case R.id.btn_confirm_calculation:
+            case R.id.fab:
                 Log.d("taggg","pressed");
                 contacts = pagerAdapter.updateContacts();
-
                 Intent intent = new Intent(InteractiveReceiptActivity.this, CalculationActivity.class);
                 intent.putParcelableArrayListExtra("contacts", contacts);
                 startActivity(intent);
@@ -151,5 +142,27 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
                 break;
         }
         //makeFakeData();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.add_contact_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add_contact:
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                    pickContacts();
+                } else {
+                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS}, PERMISSION_PICK_CONTACT);
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
