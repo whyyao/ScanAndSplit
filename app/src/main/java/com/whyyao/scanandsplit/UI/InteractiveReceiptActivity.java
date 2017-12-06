@@ -75,6 +75,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         mFAB.setOnClickListener(this);
         mToolbar.setTitle("Picking Shoppers");
         setSupportActionBar(mToolbar);
+        mTabLayout.setVisibility(View.GONE);
     }
 
     private void setupViewPager(){
@@ -88,6 +89,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
 
     //adding contact to view pager
     private void addTap(Contact contact){
+        mTabLayout.setVisibility(View.VISIBLE);
         ContactFragment myFrag = new ContactFragment().newInstance();
         Bundle args = new Bundle();
         args.putParcelableArrayList("items",items);
