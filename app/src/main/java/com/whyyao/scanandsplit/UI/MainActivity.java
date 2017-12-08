@@ -32,9 +32,20 @@ import com.whyyao.scanandsplit.R;
 import com.whyyao.scanandsplit.core.TextBlockParser;
 import com.whyyao.scanandsplit.models.Item;
 
+import org.opencv.android.OpenCVLoader;
+
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class MainActivity extends AppCompatActivity {
+
+    static{
+        if(!OpenCVLoader.initDebug()){
+            Log.d("MainActivity","OpenCV not loaded");
+        }
+        else{
+            Log.d("MainActivity","OpenCV is loaded");
+        }
+    }
 
     private final int PERMISSIONS_REQUEST_CAMERA = 0;
     private final int PERMISSIONS_REQUEST_STORAGE = 2;
