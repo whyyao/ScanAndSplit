@@ -36,6 +36,19 @@ public class ContactsPagerAdapter extends FragmentPagerAdapter {
         sContacts.add(contact);
     }
 
+    public void removeFrag(int position){
+        sFragments.remove(position);
+        sContacts.remove(position);
+        getItemPosition(position);
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
+    }
+
+
     //getting the Name of the title
     @Override
     public CharSequence getPageTitle(int position) {

@@ -1,6 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/menu_remove_contact"
+        android:title="Remove Contact"
+        android:icon="@drawable/ic_remove_contact"
+        app:showAsAction="always"/>
+
     <item android:id="@+id/menu_add_contact"
         android:title="Add Contact"
         android:icon="@drawable/ic_add_contact"

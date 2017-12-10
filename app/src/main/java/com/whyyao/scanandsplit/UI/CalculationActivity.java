@@ -125,9 +125,9 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     SmsManager smsManager = SmsManager.getDefault();
                     smsManager.sendTextMessage(phoneNo, null, message, null, null);
-                    Snackbar.make(findViewById(R.id.main_layout), "SMS sent", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.layout_calculation), "SMS sent", Snackbar.LENGTH_LONG).show();
                 } else {
-                    Snackbar mySnackbar = Snackbar.make(findViewById(R.id.main_layout),
+                    Snackbar mySnackbar = Snackbar.make(findViewById(R.id.layout_calculation),
                             "Send SMS permission is required to send a text message", Snackbar.LENGTH_LONG);
                     mySnackbar.setAction("ENABLE", new enableSendSMSListener());
                     mySnackbar.show();

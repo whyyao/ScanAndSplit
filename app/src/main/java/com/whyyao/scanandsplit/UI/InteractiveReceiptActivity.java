@@ -12,6 +12,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -51,6 +52,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
 
     private final int PICK_CONTACT = 1;
     private final int PERMISSION_PICK_CONTACT = 2;
+    private int tabPosition;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,7 +78,22 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         mFAB.setOnClickListener(this);
         mToolbar.setTitle("Picking Shoppers");
         setSupportActionBar(mToolbar);
-        mTabLayout.setVisibility(View.GONE);
+        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
+            @Override
+            public void onTabSelected(TabLayout.Tab tab){
+               tabPosition = tab.getPosition();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
     }
 
     private void setupViewPager(){
@@ -196,6 +213,16 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
                     ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS}, PERMISSION_PICK_CONTACT);
                 }
                 return true;
+
+            case R.id.menu_remove_contact:
+                if(tabPosition == 0){
+                    Snackbar meSnackbar = Snackbar.make(findViewById(R.id.layout_receipt),
+                            "You can't delete yourself :)", Snackbar.LENGTH_SHORT);
+                    meSnackbar.show();
+                }else {
+                    pagerAdapter.removeFrag(tabPosition);
+                    contactsArray.remove(tabPosition);
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
