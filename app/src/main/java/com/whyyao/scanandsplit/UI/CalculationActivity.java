@@ -42,6 +42,9 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculation);
+
+        getSupportActionBar().setTitle("Confirm Items Slections");
+
         calculate = (FloatingActionButton) findViewById(R.id.calculate_button);
         Intent intent = getIntent();
         mTotal = 0;

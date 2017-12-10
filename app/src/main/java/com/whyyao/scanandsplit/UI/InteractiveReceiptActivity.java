@@ -2,6 +2,7 @@ package com.whyyao.scanandsplit.UI;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -80,23 +81,26 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
 
     private void setupViewPager(){
         pagerAdapter = new ContactsPagerAdapter(getSupportFragmentManager());
-        Contact allItem = new Contact("TOTAL","");
+        Contact allItem = new Contact("ME",null);
         mViewPager.setAdapter(pagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        //addTap(allItem);
+        addTap(allItem);
     }
 
     //adding contact to view pager
-    private void addTap(Contact contact){
+    private void addTap(Contact contact) {
         mTabLayout.setVisibility(View.VISIBLE);
         ContactFragment myFrag = new ContactFragment().newInstance();
         Bundle args = new Bundle();
-        args.putParcelableArrayList("items",items);
+        args.putParcelableArrayList("items", items);
         args.putParcelable("contact", contact);
         myFrag.setArguments(args);
         pagerAdapter.addFrag(myFrag, contact);
         pagerAdapter.notifyDataSetChanged();
+
+        TabLayout.Tab tab = mTabLayout.getTabAt(pagerAdapter.getCount() - 1);
+        tab.select();
     }
 
     public void onClick(View view){

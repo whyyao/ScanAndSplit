@@ -35,8 +35,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_marginBottom="16dp"
+        app:backgroundTint="@color/colorPrimary"
         android:layout_marginRight="16dp"
-        android:src="@drawable/ic_confirm"
+        android:src="@drawable/ic_done"
         />
 </android.support.design.widget.CoordinatorLayout>
 
