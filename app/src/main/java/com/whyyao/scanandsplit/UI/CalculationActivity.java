@@ -64,6 +64,7 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
         recyclerView.setAdapter(mAdapter);
         TextView textView = (TextView) findViewById(R.id.textViewTotal2);
         textView.setText(String.format(Locale.CANADA, "$%.2f", mTotal));
+        calculate.setOnClickListener(this);
     }
 
     private void buildMap() {
