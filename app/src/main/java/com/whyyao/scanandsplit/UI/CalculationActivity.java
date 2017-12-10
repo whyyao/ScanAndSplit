@@ -3,6 +3,7 @@ package com.whyyao.scanandsplit.UI;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -96,10 +97,22 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
 
     protected void sendSMSMessage() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
-            } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, PERMISSIONS_REQUEST_SEND_SMS);
-            }
+        }else{
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(phoneNo, null, message, null, null);
+            Snackbar.make(findViewById(R.id.layout_calculation), "SMS sent", Snackbar.LENGTH_LONG).show();
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(CalculationActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+            }, 3000);
+
         }
     }
 
@@ -108,13 +121,13 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
         switch (v.getId()) {
             case R.id.calculate_button:
                 for (int i = 0; i < mContacts.size(); i++) {
-                    phoneNo = mContacts.get(i).getPhoneNo();
-                    message = "You owe me $" + String.format(Locale.CANADA, "%.2f", mMoney.get(i)) + ".";
-                    sendSMSMessage();
+                    Contact contact = mContacts.get(i);
+                    if(!contact.getName().equals("ME")) {
+                        phoneNo = contact.getPhoneNo();
+                        message = "You owe me $" + String.format(Locale.CANADA, "%.2f", mMoney.get(i)) + ".";
+                        sendSMSMessage();
+                    }
                 }
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
                 break;
         }
     }
@@ -124,11 +137,9 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
         switch (requestCode) {
             case PERMISSIONS_REQUEST_SEND_SMS:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    SmsManager smsManager = SmsManager.getDefault();
-                    smsManager.sendTextMessage(phoneNo, null, message, null, null);
-                    Snackbar.make(findViewById(R.id.main_layout), "SMS sent", Snackbar.LENGTH_LONG).show();
+                   sendSMSMessage();
                 } else {
-                    Snackbar mySnackbar = Snackbar.make(findViewById(R.id.main_layout),
+                    Snackbar mySnackbar = Snackbar.make(findViewById(R.id.layout_calculation),
                             "Send SMS permission is required to send a text message", Snackbar.LENGTH_LONG);
                     mySnackbar.setAction("ENABLE", new enableSendSMSListener());
                     mySnackbar.show();
