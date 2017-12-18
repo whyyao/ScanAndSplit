@@ -1,6 +1,7 @@
 package com.whyyao.scanandsplit.UI;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -26,8 +27,12 @@ import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import com.scanlibrary.IScanner;
+import com.scanlibrary.ScanActivity;
+import com.scanlibrary.ScanConstants;
 import com.whyyao.scanandsplit.R;
 import com.whyyao.scanandsplit.core.TextBlockParser;
 import com.whyyao.scanandsplit.models.Item;
@@ -51,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private final int PERMISSIONS_REQUEST_STORAGE = 2;
     private final int REQUEST_IMAGE_CAPTURE = 1;
     private final int INTERACTIVE_RECEIPT = 3;
+    int preference = ScanConstants.OPEN_CAMERA;
+    int REQUEST_CODE = 99;
     private ImageButton mCam;
     private TextView mText;
     private ImageView mImage;
@@ -77,15 +84,13 @@ public class MainActivity extends AppCompatActivity {
         mCam.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                /*
                 Bitmap test = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.hbc_min);
                 itemList = new ArrayList<>(parser.parse(scanText(test)));
                 Intent intent = new Intent(MainActivity.this, InteractiveReceiptActivity.class);
                 intent.putExtra("Items", itemList);
-                startActivity(intent);
-
-
-                // TODO: Uncomment this once we want to use the camera
-                // lunchCam();
+                startActivity(intent); */
+                launchCam();
             }
         });
     }
@@ -98,13 +103,38 @@ public class MainActivity extends AppCompatActivity {
         else if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CAMERA);
         } else{
-            imageFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "receipt_" + System.currentTimeMillis() + ".jpg");
-            imageUri = FileProvider.getUriForFile(this, "com.whyyao.scanandsplit.fileprovider", imageFile);
-            Intent takeIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            takeIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-            startActivityForResult(takeIntent, REQUEST_IMAGE_CAPTURE);
+            Intent intent = new Intent(this, ScanActivity.class);
+            intent.putExtra(ScanConstants.OPEN_INTENT_PREFERENCE, preference);
+            startActivityForResult(intent, REQUEST_CODE);
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Uri uri = data.getExtras().getParcelable(ScanConstants.SCANNED_RESULT);
+            Bitmap bitmap = null;
+            IScanner i = new IScanner() {
+                @Override
+                public void onBitmapSelect(Uri uri) {
+
+                }
+                @Override
+                public void onScanFinish(Uri uri) {
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                        getContentResolver().delete(uri, null, null);
+                        mImage.setImageBitmap(bitmap);
+                    }  catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+        }
+    }
+
+
 
     /* TODO: UNCOMMENT ONCE WE START USING THE CAMERA
     @Override
