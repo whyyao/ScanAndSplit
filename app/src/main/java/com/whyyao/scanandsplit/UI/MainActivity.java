@@ -5,14 +5,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,11 +23,9 @@ import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.scanlibrary.IScanner;
 import com.scanlibrary.ScanActivity;
 import com.scanlibrary.ScanConstants;
 import com.whyyao.scanandsplit.R;
@@ -54,15 +49,11 @@ public class MainActivity extends AppCompatActivity {
 
     private final int PERMISSIONS_REQUEST_CAMERA = 0;
     private final int PERMISSIONS_REQUEST_STORAGE = 2;
-    private final int REQUEST_IMAGE_CAPTURE = 1;
-    private final int INTERACTIVE_RECEIPT = 3;
     int preference = ScanConstants.OPEN_CAMERA;
     int REQUEST_CODE = 99;
     private ImageButton mCam;
     private TextView mText;
     private ImageView mImage;
-    private Uri imageUri;
-    private File imageFile;
     private TextBlockParser parser;
     private ArrayList<Item> itemList;
 
@@ -84,12 +75,6 @@ public class MainActivity extends AppCompatActivity {
         mCam.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                /*
-                Bitmap test = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.hbc_min);
-                itemList = new ArrayList<>(parser.parse(scanText(test)));
-                Intent intent = new Intent(MainActivity.this, InteractiveReceiptActivity.class);
-                intent.putExtra("Items", itemList);
-                startActivity(intent); */
                 launchCam();
             }
         });
@@ -115,45 +100,18 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Uri uri = data.getExtras().getParcelable(ScanConstants.SCANNED_RESULT);
             Bitmap bitmap = null;
-            IScanner i = new IScanner() {
-                @Override
-                public void onBitmapSelect(Uri uri) {
-
-                }
-                @Override
-                public void onScanFinish(Uri uri) {
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                        getContentResolver().delete(uri, null, null);
-                        mImage.setImageBitmap(bitmap);
-                    }  catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-        }
-    }
-
-
-
-    /* TODO: UNCOMMENT ONCE WE START USING THE CAMERA
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             try {
-                Uri currentUri = FileProvider.getUriForFile(this, "com.whyyao.scanandsplit.fileprovider", imageFile);
-                Bitmap thumbnail = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                Bitmap test = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.hbc_min);
-                // mImage.setImageBitmap(thumbnail);
-                ArrayList<Item> itemList = new ArrayList<>(parser.parse(scanText(test)));
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                getContentResolver().delete(uri, null, null);
+                itemList = new ArrayList<>(parser.parse(scanText(bitmap)));
                 Intent intent = new Intent(MainActivity.this, InteractiveReceiptActivity.class);
                 intent.putExtra("Items", itemList);
                 startActivity(intent);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    } */
+    }
 
     private SparseArray<TextBlock> scanText(Bitmap bitmap){
         TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
