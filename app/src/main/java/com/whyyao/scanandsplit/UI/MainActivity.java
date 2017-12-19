@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 getContentResolver().delete(uri, null, null);
+                Log.d("onActivityResult", "bitmap recovered successful");
                 startBoxPicker(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
