@@ -1,20 +1,26 @@
 package com.whyyao.scanandsplit.core;
 
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
+import android.support.constraint.solver.widgets.Rectangle;
+import android.util.Log;
 import android.util.SparseArray;
 
+import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.text.TextBlock;
 import com.whyyao.scanandsplit.models.Item;
 
 import java.util.ArrayList;
 
 import static java.lang.Math.abs;
+import java.util.Collection;
 
 /**
  * Created by Chandler on 11/30/17.
  */
 
-public class TextBlockParser {
+public class TextBlockParser  {
 
     /*
         Assumes that the two longest rectanges contain the relevant data.
@@ -28,15 +34,12 @@ public class TextBlockParser {
     private SparseArray<TextBlock> codedItems;
     private ArrayList<Item> itemObjects;
 
-    public TextBlockParser() {
-        itemObjects = new ArrayList<>();
-    }
-    public ArrayList<Item> parse(SparseArray<TextBlock> codedItems) {
+    public ArrayList<Item> parse(ArrayList<TextBlock> codedItems) {
         ArrayList<Integer> boxHeights = new ArrayList<Integer>();
 
         // Parse out heights of boxes
         for (int i = 0; i < codedItems.size(); ++i) {
-            TextBlock item = codedItems.valueAt(i);
+            TextBlock item = codedItems.get(i);
             Point[] tempPoints = item.getCornerPoints();
             int height = tempPoints[3].y - tempPoints[0].y;
             boxHeights.add(height);
@@ -63,12 +66,12 @@ public class TextBlockParser {
         String rawPrices;
 
         // Items will be on the left side, so its leftmost corner will have a smaller X-coordinate
-        if (codedItems.valueAt(firstCoodinate).getCornerPoints()[0].x < codedItems.valueAt(secondCoordinate).getCornerPoints()[0].x) {
-            rawItems = codedItems.valueAt(firstCoodinate).getValue();
-            rawPrices = codedItems.valueAt(secondCoordinate).getValue();
+        if (codedItems.get(firstCoodinate).getCornerPoints()[0].x < codedItems.get(secondCoordinate).getCornerPoints()[0].x) {
+            rawItems = codedItems.get(firstCoodinate).getValue();
+            rawPrices = codedItems.get(secondCoordinate).getValue();
         } else {
-            rawItems = codedItems.valueAt(secondCoordinate).getValue();
-            rawPrices = codedItems.valueAt(firstCoodinate).getValue();
+            rawItems = codedItems.get(secondCoordinate).getValue();
+            rawPrices = codedItems.get(firstCoodinate).getValue();
         }
 
         ArrayList<String> parsedItems = stringParser(rawItems);
