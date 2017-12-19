@@ -13,10 +13,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.text.TextBlock;
+import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,8 +30,6 @@ import com.scanlibrary.ScanActivity;
 import com.scanlibrary.ScanConstants;
 import com.whyyao.scanandsplit.R;
 import com.whyyao.scanandsplit.core.BoxPickerActivity;
-import com.whyyao.scanandsplit.core.GraphicOverlay;
-import com.whyyao.scanandsplit.core.OcrGraphic;
 import com.whyyao.scanandsplit.core.TextBlockParser;
 import com.whyyao.scanandsplit.models.Item;
 
@@ -48,20 +51,17 @@ public class MainActivity extends AppCompatActivity {
     private final int PERMISSIONS_REQUEST_CAMERA = 0;
     private final int PERMISSIONS_REQUEST_STORAGE = 2;
     int preference = ScanConstants.OPEN_CAMERA;
-    private final int RETREIVE_BOXES = 3;
     int REQUEST_CODE = 99;
     private ImageButton mCam;
     private TextView mText;
     private ImageView mImage;
     private TextBlockParser parser;
     private ArrayList<Item> itemList;
-    private GraphicOverlay<OcrGraphic> mGraphicOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mGraphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
         bindView();
         init();
     }
@@ -72,11 +72,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init(){
-
+        parser = new TextBlockParser();
         mCam.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                launchCam();
+                Uri uri = Uri.parse("android.resource://com.whyyao.scanandsplit/drawable/hbc_min");
+                startBoxPickerActivity(uri);
+                //TODO: LAUNCH CAM ONCE TESTING IS FINISHED
+                //launchCam();
             }
         });
     }
@@ -95,33 +98,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*
-        Gets a bitmap after taking the photo and processing it.
-        Takes that bitmap into the box picker which lets users filter the useful information
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Uri uri = data.getExtras().getParcelable(ScanConstants.SCANNED_RESULT);
-            Bitmap bitmap = null;
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                getContentResolver().delete(uri, null, null);
-                Log.d("onActivityResult", "bitmap recovered successful");
-                startBoxPicker(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            startBoxPickerActivity(uri);
         }
     }
 
-    private void startBoxPicker(Bitmap bitmap) {
-        Intent intent = new Intent(this, BoxPickerActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("Bitmap", bitmap);
-        intent.putExtra("Extras", bundle);
-        startActivityForResult(intent, RETREIVE_BOXES);
+    private SparseArray<TextBlock> scanText(Bitmap bitmap){
+        TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
+        SparseArray<TextBlock> items = null;
+        if (!textRecognizer.isOperational()) {
+            Log.e("ERROR", "Dependency not available");
+        } else{
+            Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+            items = textRecognizer.detect(frame);
+        }
+        return items;
+    }
+
+    private void startBoxPickerActivity(Uri uri) {
+        if (uri != null) {
+            Log.i("startBoxPicker", "bitmap not null");
+        }
+        Intent intent = new Intent(MainActivity.this, BoxPickerActivity.class);
+        intent.putExtra("Uri", uri.toString());
+        startActivity(intent);
     }
 
     @Override

@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -28,6 +30,7 @@ import com.whyyao.scanandsplit.UI.MainActivity;
 import com.whyyao.scanandsplit.models.Contact;
 import com.whyyao.scanandsplit.models.Item;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -44,6 +47,10 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
     private ImageView mImage;
     private FloatingActionButton mFAB;
 
+    public BoxPickerActivity() {
+
+    }
+
     public BoxPickerActivity(GraphicOverlay<OcrGraphic> ocrGraphicOverlay) {
         mGraphicOverlay = ocrGraphicOverlay;
     }
@@ -59,11 +66,25 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
     private void bindViews(){
         mImage = (ImageView) findViewById(R.id.parsedImage);
         mFAB = (FloatingActionButton) findViewById(R.id.finished);
+        mGraphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
     }
 
     private void init(){
-        Intent intent = getIntent();
-        mBitmap =  intent.getBundleExtra("Bundle").getParcelable("Bitmap");
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            try {
+                String extraString = extras.getString("Uri");
+                Log.i("String", extraString);
+                Uri uri = Uri.parse(extraString);
+                Log.i("init Uri", uri.toString());
+                mBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.e("Box init()", "Extras are null");
+        }
+
         mImage.setImageBitmap(mBitmap);
         mFAB.setOnClickListener(this);
         mParser = new TextBlockParser();

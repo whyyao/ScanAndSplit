@@ -30,6 +30,11 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".core.BoxPickerActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
+        </activity>
+
         <activity android:name=".UI.InteractiveReceiptActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">

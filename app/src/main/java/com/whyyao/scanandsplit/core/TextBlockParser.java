@@ -1,26 +1,20 @@
 package com.whyyao.scanandsplit.core;
 
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
-import android.support.constraint.solver.widgets.Rectangle;
-import android.util.Log;
 import android.util.SparseArray;
 
-import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.text.TextBlock;
 import com.whyyao.scanandsplit.models.Item;
 
 import java.util.ArrayList;
 
 import static java.lang.Math.abs;
-import java.util.Collection;
 
 /**
  * Created by Chandler on 11/30/17.
  */
 
-public class TextBlockParser  {
+public class TextBlockParser {
 
     /*
         Assumes that the two longest rectanges contain the relevant data.
@@ -31,8 +25,12 @@ public class TextBlockParser  {
         |  ITEM  |   | $$ |
      */
 
-    private SparseArray<TextBlock> codedItems;
+    private ArrayList<TextBlock> codedItems;
     private ArrayList<Item> itemObjects;
+
+    public TextBlockParser() {
+        itemObjects = new ArrayList<>();
+    }
 
     public ArrayList<Item> parse(ArrayList<TextBlock> codedItems) {
         ArrayList<Integer> boxHeights = new ArrayList<Integer>();
@@ -113,4 +111,3 @@ public class TextBlockParser  {
     }
 
 }
-
