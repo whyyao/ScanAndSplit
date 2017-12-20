@@ -44,6 +44,7 @@ import java.util.ArrayList;
  */
 
 
+
 public class BoxPickerActivity extends AppCompatActivity implements View.OnClickListener{
     private GraphicOverlay<OcrGraphic> mGraphicOverlay;
     private SparseArray<TextBlock> mInitialBlocks;

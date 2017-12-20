@@ -77,9 +77,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 Uri uri = Uri.parse("android.resource://com.whyyao.scanandsplit/drawable/hbc_min");
-                startBoxPickerActivity(uri);
-                //TODO: LAUNCH CAM ONCE TESTING IS FINISHED
-                //launchCam();
+                //startBoxPickerActivity(uri);
+                launchCam();
             }
         });
     }
