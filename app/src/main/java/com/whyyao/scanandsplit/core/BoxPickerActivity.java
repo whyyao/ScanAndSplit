@@ -60,6 +60,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
 
     }
 
+    // TODO: Fix this to make it line up?
     public BoxPickerActivity(GraphicOverlay<OcrGraphic> ocrGraphicOverlay) {
         mGraphicOverlay = ocrGraphicOverlay;
     }
@@ -68,6 +69,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_box_picking);
+        mSelectedBlocks = new ArrayList<>();
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         bindViews();
         init();
@@ -135,7 +137,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
                 Log.d("FAB","pressed");
                 if (mSelectedBlocks == null || mSelectedBlocks.size() > 2 || mSelectedBlocks.get(0).equals(mSelectedBlocks.get(1))) {
                     Snackbar meSnackbar = Snackbar.make(findViewById(R.id.activity_box_picking),
-                            "Please pick boxes containing your items", Snackbar.LENGTH_SHORT);
+                            "Please pick ONLY two boxes containing your ITEM NAMES and PRICES :)", Snackbar.LENGTH_LONG);
                     meSnackbar.show();
                 } else {
                     Intent intent = new Intent(this, InteractiveReceiptActivity.class);
@@ -179,17 +181,29 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
             text = graphic.getTextBlock();
             if (text != null && text.getValue() != null) {
                 Log.d(TAG, "text data is being spoken! " + text.getValue());
-                /*
-                *
-                * TODO: Should add to the ArrayList
-                *
-                */
+                mSelectedBlocks.add(text);
+                int selectedSize = mSelectedBlocks.size();
+
+                // This is just for the demo app...
+                if (selectedSize == 1) {
+                    Toast.makeText(this, "You picked the " + Integer.toString(mSelectedBlocks.size()) + "st box", Toast.LENGTH_SHORT).show();
+                }
+                else if (selectedSize == 2) {
+                    Toast.makeText(this, "You picked the " + Integer.toString(mSelectedBlocks.size()) + "nd box", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(this, "You picked the " + Integer.toString(mSelectedBlocks.size()) + "rd box",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Please pick ONLY two boxes containing your ITEM NAMES and PRICES :)",Toast.LENGTH_SHORT).show();
+                    mSelectedBlocks.clear();
+                }
+
             }
             else {
                 Log.d(TAG, "text data is null");
             }
         }
         else {
+            Toast.makeText(this, "Nothing picked, the tap is very sensitive to the region as of right now :(", Toast.LENGTH_SHORT).show();
             Log.d(TAG,"no text detected");
         }
         return text != null;
