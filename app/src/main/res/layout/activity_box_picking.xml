@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/activity_box_picking"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_box_picking"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -10,18 +10,21 @@
     <ImageView
         android:id="@+id/parsedImage"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent" />
 
-        <com.whyyao.scanandsplit.core.GraphicOverlay
-            android:id="@+id/graphicOverlay"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </ImageView>
+    <com.whyyao.scanandsplit.core.GraphicOverlay
+        android:id="@+id/graphicOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/finished"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="420dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="280dp"
+        android:layout_marginBottom="16dp"
+        android:layout_gravity="bottom" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
