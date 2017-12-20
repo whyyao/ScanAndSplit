@@ -135,15 +135,14 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
         switch(viewId) {
             case R.id.finished:
                 Log.d("FAB","pressed");
-                if (mSelectedBlocks == null || mSelectedBlocks.size() > 2 || mSelectedBlocks.get(0).equals(mSelectedBlocks.get(1))) {
-                    Snackbar meSnackbar = Snackbar.make(findViewById(R.id.activity_box_picking),
-                            "Please pick ONLY two boxes containing your ITEM NAMES and PRICES :)", Snackbar.LENGTH_LONG);
-                    meSnackbar.show();
-                } else {
+                if (mSelectedBlocks != null && mSelectedBlocks.size() == 2 && !(mSelectedBlocks.get(0).equals(mSelectedBlocks.get(1)))) {
                     Intent intent = new Intent(this, InteractiveReceiptActivity.class);
                     mItemList = new ArrayList<>(mParser.parse(mSelectedBlocks));
                     intent.putExtra("Items", mItemList);
                     startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Please pick ONLY two boxes containing your ITEM NAMES and PRICES :)", Toast.LENGTH_LONG).show();
+                    mSelectedBlocks.clear();
                 }
         }
     }
