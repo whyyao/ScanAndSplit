@@ -37,16 +37,17 @@ import java.util.ArrayList;
  * Created by Chandler on 12/19/2017.
  */
 
-public class BoxPickerActivity extends AppCompatActivity implements View.OnClickListener{
+/**implements View.OnClickListener*/
+
+public class BoxPickerActivity extends AppCompatActivity{
     private GraphicOverlay<OcrGraphic> mGraphicOverlay;
     private SparseArray<TextBlock> mInitialBlocks;
     private ArrayList<TextBlock> mSelectedBlocks;
     private TextBlockParser mParser;
     private ArrayList<Item> mItemList;
     private Bitmap mBitmap;
-    private ImageView mImage;
+    private ScannedImagePreview mImage;
     private FloatingActionButton mFAB;
-
     public BoxPickerActivity() {
 
     }
@@ -58,14 +59,14 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_box_picking);
+        setContentView(R.layout.testlinear);
         bindViews();
         init();
     }
 
     private void bindViews(){
-        mImage = (ImageView) findViewById(R.id.parsedImage);
-        mFAB = (FloatingActionButton) findViewById(R.id.finished);
+        mImage = (ScannedImagePreview) findViewById(R.id.parsedImage);
+        // mFAB = (FloatingActionButton) findViewById(R.id.finished);
         mGraphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
     }
 
@@ -85,8 +86,8 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
             Log.e("Box init()", "Extras are null");
         }
 
-        mImage.setImageBitmap(mBitmap);
-        mFAB.setOnClickListener(this);
+        //mImage.setImageBitmap(mBitmap);
+        //mFAB.setOnClickListener(this);
         mParser = new TextBlockParser();
         mInitialBlocks = scanText(mBitmap);
         putGraphic(mInitialBlocks);
@@ -102,7 +103,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
             mGraphicOverlay.add(graphic);
         }
     }
-
+/**
     public void onClick(View view){
         int viewId = view.getId();
         switch(viewId) {
@@ -120,7 +121,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
                 }
         }
     }
-
+*/
     private SparseArray<TextBlock> scanText(Bitmap bitmap){
         TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
         SparseArray<TextBlock> items = null;
@@ -139,5 +140,24 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
             items = textRecognizer.detect(frame);
         }
         return items;
+    }
+    private boolean onTap(float rawX, float rawY) {
+        // TODO: Speak the text when the user taps on screen.
+        OcrGraphic graphic = mGraphicOverlay.getGraphicAtLocation(rawX, rawY);
+        TextBlock text = null;
+        if (graphic != null) {
+            text = graphic.getTextBlock();
+            if (text != null && text.getValue() != null) {
+                Log.d("Box clicked", "text data is being spoken! " + text.getValue());
+                // TODO: Speak the string.
+            }
+            else {
+                Log.d("Box clicked", "text data is null");
+            }
+        }
+        else {
+            Log.d("Box clicked","no text detected");
+        }
+        return text != null;
     }
 }

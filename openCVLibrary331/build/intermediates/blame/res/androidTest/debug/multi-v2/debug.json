@@ -1,7 +1,11 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Chandler\\StudioProjects\\ScanAndSplit\\openCVLibrary331\\build\\intermediates\\res\\merged\\androidTest\\debug\\values_values.arsc.flat",
+            "outputFile": "/Users/Chandler/StudioProjects/ScanAndSplit/openCVLibrary331/build/intermediates/res/merged/androidTest/debug/values_values.arsc.flat",
+            "map": []
+        },
+        {
+            "outputFile": "/Users/Chandler/StudioProjects/ScanAndSplit/C:\\Users\\Chandler\\StudioProjects\\ScanAndSplit\\openCVLibrary331\\build\\intermediates\\res\\merged\\androidTest\\debug\\values_values.arsc.flat",
             "map": []
         }
     ]

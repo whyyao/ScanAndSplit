@@ -1,7 +1,11 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Chandler\\StudioProjects\\ScanAndSplit\\openCVLibrary331\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
+            "outputFile": "/Users/Chandler/StudioProjects/ScanAndSplit/openCVLibrary331/build/intermediates/incremental/mergeDebugAndroidTestResources/merged.dir/values/values.xml",
+            "map": []
+        },
+        {
+            "outputFile": "/Users/Chandler/StudioProjects/ScanAndSplit/C:\\Users\\Chandler\\StudioProjects\\ScanAndSplit\\openCVLibrary331\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
             "map": []
         }
     ]
