@@ -147,6 +147,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
                 }
         }
     }
+
     private SparseArray<TextBlock> scanText(Bitmap bitmap){
         TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
         SparseArray<TextBlock> items = null;

@@ -1,6 +1,7 @@
 package com.whyyao.scanandsplit.core;
 
 import android.graphics.Point;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.android.gms.vision.text.TextBlock;
@@ -16,6 +17,7 @@ import static java.lang.Math.abs;
 
 public class TextBlockParser {
 
+    private String TAG = "TextBlocKParser";
     /*
         Assumes that the two longest rectanges contain the relevant data.
         Representation
@@ -34,6 +36,7 @@ public class TextBlockParser {
 
     public ArrayList<Item> parse(ArrayList<TextBlock> codedItems) {
         ArrayList<Integer> boxHeights = new ArrayList<Integer>();
+        Log.i(TAG, "codedItems size " + Integer.toString(codedItems.size()));
 
         // Parse out heights of boxes
         for (int i = 0; i < codedItems.size(); ++i) {
