@@ -31,5 +31,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':openCVLibrary331')
     compile 'com.android.support:appcompat-v7:26.+'
 }
