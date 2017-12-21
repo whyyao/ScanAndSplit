@@ -16,6 +16,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.GestureDetector;
@@ -29,6 +30,7 @@ import android.view.GestureDetector;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
+import com.squareup.picasso.Picasso;
 import com.whyyao.scanandsplit.R;
 import com.whyyao.scanandsplit.UI.CalculationActivity;
 import com.whyyao.scanandsplit.UI.InteractiveReceiptActivity;
@@ -56,6 +58,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
     private FloatingActionButton mFAB;
     private String TAG = "BoxPickerActivity";
     private GestureDetector gestureDetector;
+    private final int INTERACTIVE_RECEIPT = 19;
 
     public BoxPickerActivity() {
 
@@ -85,29 +88,25 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
     private void init(){
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            mBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.hbc_min);
-            /**
-             *  * TODO: Uncomment and figure out how to get full res bitmaps from the camera...
-             String extraString = extras.getString("Uri");
+            // mBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.hbc_min);
+             String filepath = extras.getString("FilePath");
                 try {
-
-
-                    Log.i("String", extraString);
-                    Uri uri = Uri.parse(extraString);
-                    Log.i("init Uri", uri.toString());
-                    mBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-
-
-
-                } catch (IOException e) {
+                    mBitmap = BitmapFactory.decodeFile(filepath);
+                    DisplayMetrics displayMetrics = new DisplayMetrics();
+                    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+                    int height = displayMetrics.heightPixels;
+                    int width = displayMetrics.widthPixels;
+                    mImage.setImageBitmap(mBitmap);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-             **/
         } else {
             Log.e("Box init()", "Extras are null");
         }
 
-        mImage.setImageBitmap(mBitmap);
+        if (mBitmap == null) {
+            Log.e("Bitmap", "is null");
+        }
         mFAB.setOnClickListener(this);
         mParser = new TextBlockParser();
         mInitialBlocks = scanText(mBitmap);
@@ -136,7 +135,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
         switch(viewId) {
             case R.id.finished:
                 Log.d("FAB","pressed");
-                if (mSelectedBlocks == null || mSelectedBlocks.size() > 2 || mSelectedBlocks.get(0).equals(mSelectedBlocks.get(1))) {
+                if (mSelectedBlocks == null || mSelectedBlocks.size() < 2 || mSelectedBlocks.get(0).equals(mSelectedBlocks.get(1))) {
                     Snackbar meSnackbar = Snackbar.make(findViewById(R.id.activity_box_picking),
                             "Please pick ONLY two boxes containing your ITEM NAMES and PRICES :)", Snackbar.LENGTH_LONG);
                     meSnackbar.show();
@@ -144,10 +143,11 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
                     Intent intent = new Intent(this, InteractiveReceiptActivity.class);
                     mItemList = new ArrayList<>(mParser.parse(mSelectedBlocks));
                     intent.putExtra("Items", mItemList);
-                    startActivity(intent);
+                    startActivityForResult(intent, INTERACTIVE_RECEIPT);
                 }
         }
     }
+
     private SparseArray<TextBlock> scanText(Bitmap bitmap){
         TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
         SparseArray<TextBlock> items = null;
@@ -215,6 +215,18 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             return onTap(e.getRawX(), e.getRawY()) || super.onSingleTapConfirmed(e);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == INTERACTIVE_RECEIPT) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_CANCELED ) {
+                mSelectedBlocks.clear();
+                mSelectedBlocks = new ArrayList<>();
+            }
         }
     }
 

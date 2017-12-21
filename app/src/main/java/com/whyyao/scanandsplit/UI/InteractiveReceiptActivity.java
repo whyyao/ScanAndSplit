@@ -52,7 +52,20 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
 
     private final int PICK_CONTACT = 1;
     private final int PERMISSION_PICK_CONTACT = 2;
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mViewPager = null;
+    }
+
     private int tabPosition;
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mViewPager = null;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

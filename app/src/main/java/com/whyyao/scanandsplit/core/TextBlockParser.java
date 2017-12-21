@@ -1,9 +1,12 @@
 package com.whyyao.scanandsplit.core;
 
 import android.graphics.Point;
+import android.util.Log;
 import android.util.SparseArray;
+import android.widget.Toast;
 
 import com.google.android.gms.vision.text.TextBlock;
+import com.whyyao.scanandsplit.R;
 import com.whyyao.scanandsplit.models.Item;
 
 import java.util.ArrayList;
@@ -75,10 +78,14 @@ public class TextBlockParser {
         ArrayList<String> parsedItems = stringParser(rawItems);
         ArrayList<String> parsedPrices = stringParser(rawPrices);
 
-        for (int i = 0; i < parsedItems.size(); i++) {
-            Item temp = new Item(parsedItems.get(i), Double.parseDouble(parsedPrices.get(i)));
-            itemObjects.add(temp);
-            temp.print();
+        try {
+            for (int i = 0; i < parsedItems.size(); i++) {
+                Item temp = new Item(parsedItems.get(i), Double.parseDouble(parsedPrices.get(i)));
+                itemObjects.add(temp);
+                temp.print();
+            }
+        } catch (java.lang.NumberFormatException e) {
+            Log.e("TextBlockParser", "Can't figure out numbers");
         }
 
         return itemObjects;

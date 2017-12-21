@@ -101,8 +101,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Uri uri = data.getExtras().getParcelable(ScanConstants.SCANNED_RESULT);
-            startBoxPickerActivity(uri);
+            String filePath = data.getExtras().getString("FilePath");
+
+            startBoxPickerActivity(filePath);
         }
     }
 
@@ -118,12 +119,12 @@ public class MainActivity extends AppCompatActivity {
         return items;
     }
 
-    private void startBoxPickerActivity(Uri uri) {
-        if (uri != null) {
+    private void startBoxPickerActivity(String filepath) {
+        if (filepath != null) {
             Log.i("startBoxPicker", "bitmap not null");
         }
         Intent intent = new Intent(MainActivity.this, BoxPickerActivity.class);
-        intent.putExtra("Uri", uri.toString());
+        intent.putExtra("FilePath", filepath);
         startActivity(intent);
     }
 

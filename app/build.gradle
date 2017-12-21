@@ -36,6 +36,8 @@ dependencies {
     compile 'com.rmtheis:tess-two:5.4.1'
     compile 'com.android.support:design:26.+'
     testCompile 'junit:junit:4.12'
-    compile project(':scanlibrary')
+    // compile project(':scanlibrary')
+    compile 'com.squareup.picasso:picasso:2.5.2'
     compile project(':openCVLibrary331')
+    compile project(':scanlibrary_2')
 }
