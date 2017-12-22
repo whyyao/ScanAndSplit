@@ -39,6 +39,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     // compile project(':scanlibrary')
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile project(':openCVLibrary331')
+    //compile project(':openCVLibrary331')
     compile project(':scanlibrary_2')
 }
