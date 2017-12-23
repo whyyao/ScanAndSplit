@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ScanAndSplit</string>
+    <string name="app_name">Scan &amp; Split</string>
     <string-array name="oses">
         <item>Android</item>
         <item>iPhone</item>

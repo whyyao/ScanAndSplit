@@ -1,8 +1,6 @@
 package com.whyyao.scanandsplit.UI;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -24,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.whyyao.scanandsplit.R;
@@ -33,7 +30,6 @@ import com.whyyao.scanandsplit.models.Contact;
 import com.whyyao.scanandsplit.models.Item;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by tristantstarck on 12/1/17.
@@ -243,7 +239,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, StartingActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ScanAndSplit.iml" filepath="$PROJECT_DIR$/ScanAndSplit.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ScanLibrary/scanlibrary_2.iml" filepath="$PROJECT_DIR$/ScanLibrary/scanlibrary_2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ScanLibrary/ScanLibrary.iml" filepath="$PROJECT_DIR$/ScanLibrary/ScanLibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

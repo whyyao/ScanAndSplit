@@ -107,7 +107,7 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intent = new Intent(CalculationActivity.this, MainActivity.class);
+                    Intent intent = new Intent(CalculationActivity.this, StartingActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }

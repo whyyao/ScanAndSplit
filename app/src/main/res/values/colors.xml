@@ -6,4 +6,5 @@
 
     <color name="colorPicked">@color/colorAccent</color>
     <color name="colorUnpicked">#FAFAFA</color>
+    <color name="Black">#000000</color>
 </resources>

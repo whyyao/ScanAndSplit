@@ -4,41 +4,27 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.view.GestureDetector;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
-import com.squareup.picasso.Picasso;
 import com.whyyao.scanandsplit.R;
-import com.whyyao.scanandsplit.UI.CalculationActivity;
 import com.whyyao.scanandsplit.UI.InteractiveReceiptActivity;
-import com.whyyao.scanandsplit.UI.MainActivity;
-import com.whyyao.scanandsplit.models.Contact;
 import com.whyyao.scanandsplit.models.Item;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -81,7 +67,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
 
     private void bindViews(){
         mImage = (ImageView) findViewById(R.id.parsedImage);
-        mFAB = (FloatingActionButton) findViewById(R.id.finished);
+        mFAB = (FloatingActionButton) findViewById(R.id.box_finished);
         mGraphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
     }
 
@@ -133,7 +119,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View view){
         int viewId = view.getId();
         switch(viewId) {
-            case R.id.finished:
+            case R.id.box_finished:
                 Log.d("FAB","pressed");
                 if (mSelectedBlocks == null || mSelectedBlocks.size() < 2 || mSelectedBlocks.get(0).equals(mSelectedBlocks.get(1))) {
                     Snackbar meSnackbar = Snackbar.make(findViewById(R.id.activity_box_picking),
