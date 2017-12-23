@@ -22,7 +22,7 @@ import com.whyyao.scanandsplit.core.BoxPickerActivity;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-public class StartingActivity extends AppCompatActivity {
+public class StartingActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final int PERMISSIONS_REQUEST_CAMERA = 0;
     private final int PERMISSIONS_REQUEST_STORAGE = 1;
@@ -49,24 +49,8 @@ public class StartingActivity extends AppCompatActivity {
     }
 
     private void init(){
-        mCam.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                Uri uri = Uri.parse("android.resource://com.whyyao.scanandsplit/drawable/hbc_min");
-                //startBoxPickerActivity(uri);
-                launchCam();
-            }
-        });
-        mGal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(StartingActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    launchGallery();
-                } else {
-                    ActivityCompat.requestPermissions(StartingActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, GALLERY_PERMS);
-                }
-            }
-        });
+        mCam.setOnClickListener(this);
+        mGal.setOnClickListener(this);
     }
 
     private void launchCam(){
@@ -96,11 +80,11 @@ public class StartingActivity extends AppCompatActivity {
                 switch (requestCode) {
                     case ACTIVITY_TAKE_IMAGE:
                         String filePath = data.getExtras().getString("FilePath");
-                        startBoxPickerActivity(filePath);
+                        startBoxPickerActivity(filePath, null);
                         break;
                     case ACTIVITY_SELECT_IMAGE:
                         Uri uri = data.getData();
-                        String newUri = uri.toString();
+                        startBoxPickerActivity(null, uri);
                         break;
                 }
             } catch (Exception e) {
@@ -109,13 +93,20 @@ public class StartingActivity extends AppCompatActivity {
         }
     }
 
-    private void startBoxPickerActivity(String filepath) {
-        if (filepath != null) {
-            Log.i("startBoxPicker", "bitmap not null");
-        }
+    /*
+        filepath -> photo taken with camera
+        Uri  -> scanned taken from gallery
+
+     */
+    private void startBoxPickerActivity(String filepath, Uri uri) {
         Intent intent = new Intent(StartingActivity.this, BoxPickerActivity.class);
-        intent.putExtra("FilePath", filepath);
-        startActivity(intent);
+        if (filepath != null) {
+            intent.putExtra("FilePath", filepath);
+            startActivity(intent);
+        } else if (uri != null) {
+            intent.putExtra("GalUri", uri.toString());
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -141,6 +132,24 @@ public class StartingActivity extends AppCompatActivity {
                     mySnackbar.show();
                 }
                 return;
+        }
+    }
+
+    public void onClick(View view){
+        int viewId = view.getId();
+        switch(viewId) {
+            case R.id.fab_follow:
+                Uri uri = Uri.parse("android.resource://com.whyyao.scanandsplit/drawable/hbc_min");
+                //startBoxPickerActivity(uri);
+                launchCam();
+                break;
+            case R.id.fab:
+                if (ContextCompat.checkSelfPermission(StartingActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    launchGallery();
+                } else {
+                    ActivityCompat.requestPermissions(StartingActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, GALLERY_PERMS);
+                }
+                break;
         }
     }
 

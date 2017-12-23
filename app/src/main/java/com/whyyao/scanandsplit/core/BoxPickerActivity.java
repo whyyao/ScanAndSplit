@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,6 +25,7 @@ import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 import com.whyyao.scanandsplit.R;
 import com.whyyao.scanandsplit.UI.InteractiveReceiptActivity;
+import com.whyyao.scanandsplit.UI.StartingActivity;
 import com.whyyao.scanandsplit.models.Item;
 
 import java.util.ArrayList;
@@ -75,28 +78,32 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             // mBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.hbc_min);
-             String filepath = extras.getString("FilePath");
-                try {
+            String filepath = extras.getString("FilePath");
+            Uri galUri = Uri.parse(extras.getString("GalUri"));
+            if (filepath != null || galUri != null) {
+                if (filepath != null) {
                     mBitmap = BitmapFactory.decodeFile(filepath);
-                    DisplayMetrics displayMetrics = new DisplayMetrics();
-                    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                    int height = displayMetrics.heightPixels;
-                    int width = displayMetrics.widthPixels;
                     mImage.setImageBitmap(mBitmap);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } else if (galUri != null) {
+                    try {
+                        mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), galUri);
+                    } catch (java.io.IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+                mImage.setImageBitmap(mBitmap);
+                mFAB.setOnClickListener(this);
+                mParser = new TextBlockParser();
+                mInitialBlocks = scanText(mBitmap);
+                putGraphic(mInitialBlocks);
+            }
         } else {
-            Log.e("Box init()", "Extras are null");
+            Toast.makeText(this, "Error, please pick image again", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, StartingActivity.class);// New activity
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish(); // Call once you redirect to another activity
         }
-
-        if (mBitmap == null) {
-            Log.e("Bitmap", "is null");
-        }
-        mFAB.setOnClickListener(this);
-        mParser = new TextBlockParser();
-        mInitialBlocks = scanText(mBitmap);
-        putGraphic(mInitialBlocks);
     }
 
     public void putGraphic(SparseArray<TextBlock> items) {
@@ -125,11 +132,13 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
                     Snackbar meSnackbar = Snackbar.make(findViewById(R.id.activity_box_picking),
                             "Please pick ONLY two boxes containing your ITEM NAMES and PRICES :)", Snackbar.LENGTH_LONG);
                     meSnackbar.show();
+                    break;
                 } else {
                     Intent intent = new Intent(this, InteractiveReceiptActivity.class);
                     mItemList = new ArrayList<>(mParser.parse(mSelectedBlocks));
                     intent.putExtra("Items", mItemList);
                     startActivityForResult(intent, INTERACTIVE_RECEIPT);
+                    break;
                 }
         }
     }
@@ -183,7 +192,6 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
                     Toast.makeText(this, "Please pick ONLY two boxes containing your ITEM NAMES and PRICES :)",Toast.LENGTH_SHORT).show();
                     mSelectedBlocks.clear();
                 }
-
             }
             else {
                 Log.d(TAG, "text data is null");
@@ -197,7 +205,6 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
     }
 
     private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {
-
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             return onTap(e.getRawX(), e.getRawY()) || super.onSingleTapConfirmed(e);
