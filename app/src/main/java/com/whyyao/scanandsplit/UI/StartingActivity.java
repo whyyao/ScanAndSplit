@@ -93,10 +93,12 @@ public class StartingActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    /*
-        filepath -> photo taken with camera
-        Uri  -> scanned taken from gallery
-
+    /**
+     * startBoxPickerActivity is called once a photo is taken or chosen
+     *
+     * @param filepath - the string to the last picture taken
+     * @param uri - the uri for the chosen gallery picture
+     *
      */
     private void startBoxPickerActivity(String filepath, Uri uri) {
         Intent intent = new Intent(StartingActivity.this, BoxPickerActivity.class);

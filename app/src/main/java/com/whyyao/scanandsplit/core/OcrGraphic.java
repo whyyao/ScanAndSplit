@@ -33,7 +33,10 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
 
     private int mId;
 
-    private static final int TEXT_COLOR = Color.RED;
+    private static final int TEXT_COLOR = Color.BLACK;
+    private static final int ITEM_COLOR = Color.BLUE;
+    private static final int PRICE_COLOR = Color.RED;
+    private static final int TAX_CCOLOR = Color.GREEN;
 
     private static Paint sRectPaint;
     private static Paint sTextPaint;
@@ -48,7 +51,7 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
             sRectPaint = new Paint();
             sRectPaint.setColor(TEXT_COLOR);
             sRectPaint.setStyle(Paint.Style.STROKE);
-            sRectPaint.setStrokeWidth(4.0f);
+            sRectPaint.setStrokeWidth(7.0f);
         }
 
         if (sTextPaint == null) {
@@ -111,11 +114,14 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
         canvas.drawRect(rect, sRectPaint);
 
         // Break the text into multiple lines and draw each one according to its own bounding box.
+
+        /*
         List<? extends Text> textComponents = text.getComponents();
         for(Text currentText : textComponents) {
             float left = translateX(currentText.getBoundingBox().left);
             float bottom = translateY(currentText.getBoundingBox().bottom);
             canvas.drawText(currentText.getValue(), left, bottom, sTextPaint);
         }
+        */
     }
 }

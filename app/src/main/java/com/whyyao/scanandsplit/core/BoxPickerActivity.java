@@ -34,9 +34,11 @@ import java.util.ArrayList;
  * Created by Chandler on 12/19/2017.
  */
 
-
-
 public class BoxPickerActivity extends AppCompatActivity implements View.OnClickListener{
+
+    private final int INTERACTIVE_RECEIPT = 19;
+    private final String TAG = "BoxPickerActivity";
+
     private GraphicOverlay<OcrGraphic> mGraphicOverlay;
     private SparseArray<TextBlock> mInitialBlocks;
     private ArrayList<TextBlock> mSelectedBlocks;
@@ -45,9 +47,8 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
     private Bitmap mBitmap;
     private ImageView mImage;
     private FloatingActionButton mFAB;
-    private String TAG = "BoxPickerActivity";
     private GestureDetector gestureDetector;
-    private final int INTERACTIVE_RECEIPT = 19;
+
 
     public BoxPickerActivity() {
 
@@ -61,7 +62,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_box_picking);
+        setContentView(R.layout.activity_box_picking_2);
         mSelectedBlocks = new ArrayList<>();
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         bindViews();
@@ -119,8 +120,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        boolean c = gestureDetector.onTouchEvent(e);
-        return c || super.onTouchEvent(e);
+        return gestureDetector.onTouchEvent(e) || super.onTouchEvent(e);
     }
 
     public void onClick(View view){
