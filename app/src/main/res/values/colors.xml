@@ -8,4 +8,9 @@
     <color name="colorUnpicked">#FAFAFA</color>
     <color name="Black">#000000</color>
     <color name="White">#FFFFFF</color>
+
+    <color name="item_color">#ffff00</color>
+    <color name="price_color">#FF0000</color>
+    <color name="tax_color">#00FF00</color>
+    <color name="default_color">#FFFFFF</color>
 </resources>

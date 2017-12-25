@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -17,10 +19,13 @@ import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 import com.whyyao.scanandsplit.R;
@@ -30,23 +35,37 @@ import com.whyyao.scanandsplit.models.Item;
 
 import java.util.ArrayList;
 
+import static com.whyyao.scanandsplit.core.OcrGraphic.ITEM_COLOR;
+import static com.whyyao.scanandsplit.core.OcrGraphic.PRICE_COLOR;
+import static com.whyyao.scanandsplit.core.OcrGraphic.TAX_COLOR;
+
 /**
  * Created by Chandler on 12/19/2017.
  */
 
-public class BoxPickerActivity extends AppCompatActivity implements View.OnClickListener{
+public class BoxPickerActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener{
 
     private final int INTERACTIVE_RECEIPT = 19;
     private final String TAG = "BoxPickerActivity";
+    private final String ITEM = "Item";
+    private final String PRICE = "Price";
+    private final String TAX = "Tax";
 
     private GraphicOverlay<OcrGraphic> mGraphicOverlay;
     private SparseArray<TextBlock> mInitialBlocks;
     private ArrayList<TextBlock> mSelectedBlocks;
+    private ArrayList<String> mSelectedBlockID;
     private TextBlockParser mParser;
     private ArrayList<Item> mItemList;
     private Bitmap mBitmap;
     private ImageView mImage;
     private FloatingActionButton mFAB;
+    private ToggleButton mFirstToggle;
+    private Boolean firstIsOn;
+    private ToggleButton mSecondToggle;
+    private Boolean secondIsOn;
+    private ToggleButton mThirdToggle;
+    private Boolean thirdIsOn;
     private GestureDetector gestureDetector;
 
 
@@ -64,6 +83,10 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_box_picking_2);
         mSelectedBlocks = new ArrayList<>();
+        mSelectedBlockID = new ArrayList<>();
+        firstIsOn = false;
+        secondIsOn = false;
+        thirdIsOn = false;
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         bindViews();
         init();
@@ -73,6 +96,9 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
         mImage = (ImageView) findViewById(R.id.parsedImage);
         mFAB = (FloatingActionButton) findViewById(R.id.box_finished);
         mGraphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
+        mFirstToggle = (ToggleButton) findViewById(R.id.toggle_1);
+        mSecondToggle = (ToggleButton) findViewById(R.id.toggle_2);
+        mThirdToggle = (ToggleButton) findViewById(R.id.toggle_3);
     }
 
     private void init(){
@@ -94,6 +120,9 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
                 }
                 mImage.setImageBitmap(mBitmap);
                 mFAB.setOnClickListener(this);
+                mFirstToggle.setOnCheckedChangeListener(this);
+                mSecondToggle.setOnCheckedChangeListener(this);
+                mThirdToggle.setOnCheckedChangeListener(this);
                 mParser = new TextBlockParser();
                 mInitialBlocks = scanText(mBitmap);
                 putGraphic(mInitialBlocks);
@@ -143,6 +172,32 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        int buttonId = buttonView.getId();
+        if (isChecked) {
+            switch (buttonId) {
+                case R.id.toggle_1:
+                    setToggles(mFirstToggle, mSecondToggle, mThirdToggle);
+                    mFirstToggle.setTextColor(ContextCompat.getColor(this, R.color.item_color));
+                    firstIsOn = true; secondIsOn = false; thirdIsOn = false;
+                    // TODO: Logic for color changes and onTap
+                    break;
+                case R.id.toggle_2:
+                    setToggles(mSecondToggle, mFirstToggle, mThirdToggle);
+                    mSecondToggle.setTextColor(ContextCompat.getColor(this, R.color.price_color));
+                    firstIsOn = false; secondIsOn = true; thirdIsOn = false;
+                    // TODO: Logic for color changes and onTap
+                    break;
+                case R.id.toggle_3:
+                    setToggles(mThirdToggle, mFirstToggle, mSecondToggle);
+                    mThirdToggle.setTextColor(ContextCompat.getColor(this, R.color.tax_color));
+                    firstIsOn = false; secondIsOn = false; thirdIsOn = true;
+                    // TODO: Logic for color changes and onTap
+                    break;
+            }
+        }
+    }
+
     private SparseArray<TextBlock> scanText(Bitmap bitmap){
         TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
         SparseArray<TextBlock> items = null;
@@ -176,21 +231,14 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
         if (graphic != null) {
             text = graphic.getTextBlock();
             if (text != null && text.getValue() != null) {
-                Log.d(TAG, "text data is being spoken! " + text.getValue());
-                mSelectedBlocks.add(text);
-                int selectedSize = mSelectedBlocks.size();
-
-                // This is just for the demo app...
-                if (selectedSize == 1) {
-                    Toast.makeText(this, "You picked the " + Integer.toString(mSelectedBlocks.size()) + "st box", Toast.LENGTH_SHORT).show();
-                }
-                else if (selectedSize == 2) {
-                    Toast.makeText(this, "You picked the " + Integer.toString(mSelectedBlocks.size()) + "nd box", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(this, "You picked the " + Integer.toString(mSelectedBlocks.size()) + "rd box",Toast.LENGTH_SHORT).show();
-                    Toast.makeText(this, "Please pick ONLY two boxes containing your ITEM NAMES and PRICES :)",Toast.LENGTH_SHORT).show();
-                    mSelectedBlocks.clear();
+                if (firstIsOn) {
+                    touchHandler(graphic, 1, ITEM);
+                } else if (secondIsOn) {
+                    touchHandler(graphic, 2, PRICE);
+                } else if (thirdIsOn) {
+                    touchHandler(graphic, 3, TAX);
+                } else {
+                    Toast.makeText(this, "Please pick ITEMS, PRICES, or TAX", Toast.LENGTH_SHORT).show();
                 }
             }
             else {
@@ -220,6 +268,75 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
                 mSelectedBlocks.clear();
                 mSelectedBlocks = new ArrayList<>();
             }
+        }
+    }
+
+    private void setToggles(ToggleButton activeButton, ToggleButton firstToggleButton, ToggleButton secondToggleButton) {
+        activeButton.setTypeface(null, Typeface.BOLD_ITALIC);
+        firstToggleButton.setChecked(false);
+        firstToggleButton.setTypeface(null, Typeface.NORMAL);
+        firstToggleButton.setTextColor(ContextCompat.getColor(this, R.color.default_color));
+        secondToggleButton.setChecked(false);
+        secondToggleButton.setTypeface(null, Typeface.NORMAL);
+        secondToggleButton.setTextColor(ContextCompat.getColor(this, R.color.default_color));
+    }
+
+    /*
+    * touchHandler is called when a user touches a TextBlock with one of the options selected
+    *
+    * @param oldGraphic - OcrGraphic to be replaced with the new one
+    * @param colorId - color of the type the user is currently choosing (1, 2, 3)
+    * @param type - which type of field the user is choosing (ITEM, PRICE, TAX)
+    *
+    */
+    private void touchHandler(OcrGraphic oldGraphic, int colorId, String type) {
+        OcrGraphic newGraphic;
+        int colorInt = -100;
+        TextBlock textblock = oldGraphic.getTextBlock();
+        switch(colorId) {
+            case(1):
+                colorInt = ITEM_COLOR;
+                break;
+            case(2):
+                colorInt = PRICE_COLOR;
+                break;
+            case(3):
+                colorInt = TAX_COLOR;
+                break;
+        }
+        // Hasn't been touched (ADD IT)
+        if (oldGraphic.getColor() == oldGraphic.TEXT_COLOR ) {
+            newGraphic = new OcrGraphic(mGraphicOverlay, oldGraphic.getTextBlock(), colorId);
+            mGraphicOverlay.remove(oldGraphic);
+            mGraphicOverlay.add(newGraphic);
+
+            mSelectedBlocks.add(textblock);
+            mSelectedBlockID.add(type);
+
+            Log.i(TAG, "Isn't contained adding " + type);
+        }
+        // Same color (REMOVE IT)
+        else if (oldGraphic.getColor() == colorInt) {
+            newGraphic = new OcrGraphic(mGraphicOverlay, oldGraphic.getTextBlock(), -1);
+            mGraphicOverlay.remove(oldGraphic);
+            mGraphicOverlay.add(newGraphic);
+
+            int position = mSelectedBlocks.indexOf(textblock);
+            mSelectedBlocks.remove(textblock);
+            mSelectedBlockID.remove(position);
+
+            Log.i(TAG, "Removing " + type);
+        }
+        // Different color (CHANGE IT)
+        else if (oldGraphic.getColor() != colorInt) {
+            newGraphic = new OcrGraphic(mGraphicOverlay, oldGraphic.getTextBlock(), colorId);
+            mGraphicOverlay.remove(oldGraphic);
+            mGraphicOverlay.add(newGraphic);
+
+            int position = mSelectedBlocks.indexOf(textblock);
+            mSelectedBlockID.set(position, type);
+
+            Log.i(TAG, "Changing to " + type);
         }
     }
 

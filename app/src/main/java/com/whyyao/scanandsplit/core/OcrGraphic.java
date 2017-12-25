@@ -19,6 +19,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.Log;
 
 import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
@@ -33,13 +34,15 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
 
     private int mId;
 
-    private static final int TEXT_COLOR = Color.BLACK;
-    private static final int ITEM_COLOR = Color.BLUE;
-    private static final int PRICE_COLOR = Color.RED;
-    private static final int TAX_CCOLOR = Color.GREEN;
+    private final String TAG = "OcrGraphics";
 
-    private static Paint sRectPaint;
-    private static Paint sTextPaint;
+    public static final int TEXT_COLOR = Color.BLACK;
+    public static final int ITEM_COLOR = Color.YELLOW;
+    public static final int PRICE_COLOR = Color.RED;
+    public static final int TAX_COLOR = Color.GREEN;
+
+    private Paint sRectPaint;
+    private Paint sTextPaint;
     private final TextBlock mText;
 
     OcrGraphic(GraphicOverlay overlay, TextBlock text) {
@@ -59,6 +62,41 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
             sTextPaint.setColor(TEXT_COLOR);
             sTextPaint.setTextSize(54.0f);
         }
+        // Redraw the overlay, as this graphic has been added.
+        postInvalidate();
+    }
+
+    OcrGraphic(GraphicOverlay overlay, TextBlock text, Integer color) {
+        super(overlay);
+
+        int newColor = 0;
+
+        switch(color) {
+            case -1:
+                newColor = TEXT_COLOR;
+                break;
+            case 1:
+                newColor = ITEM_COLOR;
+                break;
+            case 2:
+                newColor = PRICE_COLOR;
+                break;
+            case 3:
+                newColor = TAX_COLOR;
+                break;
+        }
+
+        mText = text;
+
+        sRectPaint = new Paint();
+        sRectPaint.setColor(newColor);
+        sRectPaint.setStyle(Paint.Style.STROKE);
+        sRectPaint.setStrokeWidth(7.0f);
+
+        sTextPaint = new Paint();
+        sTextPaint.setColor(newColor);
+        sTextPaint.setTextSize(54.0f);
+
         // Redraw the overlay, as this graphic has been added.
         postInvalidate();
     }
@@ -112,7 +150,6 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
         rect.right = translateX(rect.right);
         rect.bottom = translateY(rect.bottom);
         canvas.drawRect(rect, sRectPaint);
-
         // Break the text into multiple lines and draw each one according to its own bounding box.
 
         /*
@@ -123,5 +160,27 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
             canvas.drawText(currentText.getValue(), left, bottom, sTextPaint);
         }
         */
+    }
+
+    // Makes a copy of current OcrGraphic but with the paint changed...
+    public OcrGraphic changeColor(int color) {
+        OcrGraphic result = this;
+        Paint newPaint = sRectPaint;
+        switch (color) {
+            case 0:
+                newPaint.setColor(ITEM_COLOR);
+                break;
+            case 1:
+                newPaint.setColor(PRICE_COLOR);
+                break;
+            case 2:
+                newPaint.setColor(TAX_COLOR);
+                break;
+        }
+        return result;
+    }
+
+    public int getColor() {
+        return sRectPaint.getColor();
     }
 }
