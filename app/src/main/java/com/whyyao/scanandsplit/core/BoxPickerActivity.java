@@ -2,6 +2,7 @@ package com.whyyao.scanandsplit.core;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
@@ -68,12 +69,10 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
     private Boolean thirdIsOn;
     private GestureDetector gestureDetector;
 
-
     public BoxPickerActivity() {
 
     }
 
-    // TODO: Fix this to make it line up?
     public BoxPickerActivity(GraphicOverlay<OcrGraphic> ocrGraphicOverlay) {
         mGraphicOverlay = ocrGraphicOverlay;
     }
@@ -104,7 +103,6 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
     private void init(){
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            // mBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.hbc_min);
             String filepath = extras.getString("FilePath");
             Uri galUri = Uri.parse(extras.getString("GalUri"));
             if (filepath != null || galUri != null) {
@@ -129,7 +127,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
             }
         } else {
             Toast.makeText(this, "Error, please pick image again", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(this, StartingActivity.class);// New activity
+            Intent intent = new Intent(this, StartingActivity.class); // New activity
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish(); // Call once you redirect to another activity
@@ -156,8 +154,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
         int viewId = view.getId();
         switch(viewId) {
             case R.id.box_finished:
-                Log.d("FAB","pressed");
-                if (mSelectedBlocks == null || mSelectedBlocks.size() < 2 || mSelectedBlocks.get(0).equals(mSelectedBlocks.get(1))) {
+                if (mSelectedBlocks == null || mSelectedBlocks.size() < 3) {
                     Snackbar meSnackbar = Snackbar.make(findViewById(R.id.activity_box_picking),
                             "Please pick ONLY two boxes containing your ITEM NAMES and PRICES :)", Snackbar.LENGTH_LONG);
                     meSnackbar.show();
@@ -238,7 +235,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
                 } else if (thirdIsOn) {
                     touchHandler(graphic, 3, TAX);
                 } else {
-                    Toast.makeText(this, "Please pick ITEMS, PRICES, or TAX", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Please pick ITEMS, PRICES, or TAX (at the top)", Toast.LENGTH_SHORT).show();
                 }
             }
             else {
@@ -246,8 +243,12 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
             }
         }
         else {
-            Toast.makeText(this, "Nothing picked, the tap is very sensitive to the region as of right now :(", Toast.LENGTH_SHORT).show();
             Log.d(TAG,"no text detected");
+        }
+        if (isFabReady()) {
+            mFAB.show();
+        } else {
+            mFAB.hide();
         }
         return text != null;
     }
@@ -338,6 +339,26 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
 
             Log.i(TAG, "Changing to " + type);
         }
+    }
+
+    /*
+     * @return Boolean which checks if there's at least one Iem, Price, and Tax TextBlock
+     */
+    private Boolean isFabReady() {
+        int item = 0, price = 0, tax = 0;
+        for (int i = 0; i < mSelectedBlockID.size(); i++) {
+            if (mSelectedBlockID.get(i) == ITEM) {
+                item++;
+            } else if (mSelectedBlockID.get(i) == PRICE) {
+                price++;
+            } else if (mSelectedBlockID.get(i) == TAX) {
+                tax++;
+            }
+        }
+        if (item > 0 && price > 0 && tax > 0) {
+            return true;
+        }
+        return false;
     }
 
 }
