@@ -1,6 +1,7 @@
 package com.whyyao.scanandsplit.core;
 
 import android.graphics.Point;
+import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -11,6 +12,9 @@ import com.whyyao.scanandsplit.models.Item;
 
 import java.util.ArrayList;
 
+import static com.whyyao.scanandsplit.core.BoxPickerActivity.ITEM;
+import static com.whyyao.scanandsplit.core.BoxPickerActivity.PRICE;
+import static com.whyyao.scanandsplit.core.BoxPickerActivity.TAX;
 import static java.lang.Math.abs;
 
 /**
@@ -28,56 +32,46 @@ public class TextBlockParser {
         |  ITEM  |   | $$ |
      */
 
-    private ArrayList<TextBlock> codedItems;
+    private final String TAG = "TextBlockParser";
     private ArrayList<Item> itemObjects;
 
     public TextBlockParser() {
         itemObjects = new ArrayList<>();
     }
 
-    public ArrayList<Item> parse(ArrayList<TextBlock> codedItems) {
-        ArrayList<Integer> boxHeights = new ArrayList<Integer>();
+    public Bundle parse(ArrayList<TextBlock> codedItems, ArrayList<String> codedID) {
 
-        // Parse out heights of boxes
-        for (int i = 0; i < codedItems.size(); ++i) {
-            TextBlock item = codedItems.get(i);
-            Point[] tempPoints = item.getCornerPoints();
-            int height = tempPoints[3].y - tempPoints[0].y;
-            boxHeights.add(height);
-        }
+        ArrayList<String> rawItemArray = new ArrayList<>();
+        ArrayList<String> rawPriceArray = new ArrayList<>();
+        String rawTaxes = "";
 
-        // Find the heights of the two largest boxes, store their coordinates
-        int firstBox = 0;
-        int firstCoodinate = 0;
-        int secondBox = 0;
-        int secondCoordinate = 0;
-        for (int i = 0; i < boxHeights.size(); i++) {
-            if (firstBox <= boxHeights.get(i)) {
-                secondBox = firstBox;
-                secondCoordinate = i-1;
-                firstBox = boxHeights.get(i);
-                firstCoodinate = i;
-            } else if (secondBox <= boxHeights.get(i)) {
-                secondBox = boxHeights.get(i);
-                secondCoordinate = i;
+        // Takes all the codedItems and parses all values into there respective partitions
+        for (int i = 0; i < codedItems.size(); i++) {
+            if (codedID.get(i) == ITEM) {
+                rawItemArray.add(codedItems.get(i).getValue());
+            } else if (codedID.get(i) == PRICE) {
+                rawPriceArray.add(codedItems.get(i).getValue());
+            } else if (codedID.get(i) == TAX) {
+                rawTaxes = (codedItems.get(i).getValue());
             }
         }
 
-        String rawItems;
-        String rawPrices;
-
-        // Items will be on the left side, so its leftmost corner will have a smaller X-coordinate
-        if (codedItems.get(firstCoodinate).getCornerPoints()[0].x < codedItems.get(secondCoordinate).getCornerPoints()[0].x) {
-            rawItems = codedItems.get(firstCoodinate).getValue();
-            rawPrices = codedItems.get(secondCoordinate).getValue();
-        } else {
-            rawItems = codedItems.get(secondCoordinate).getValue();
-            rawPrices = codedItems.get(firstCoodinate).getValue();
+        // Parses ITEM names into it's respective Strings
+        String rawItems = "";
+        for (int i = 0; i < rawItemArray.size(); i++) {
+            rawItems = rawItems + rawItemArray.get(i);
         }
-
         ArrayList<String> parsedItems = stringParser(rawItems);
+
+
+        // Parses PRICES into it's respective Strings
+        String rawPrices = "";
+        for (int i = 0; i < rawPriceArray.size(); i++) {
+            rawPrices = rawPrices + rawPriceArray.get(i);
+        }
         ArrayList<String> parsedPrices = stringParser(rawPrices);
 
+        // Creates all the Item objects from the ITEMS and PRICES
         try {
             for (int i = 0; i < parsedItems.size(); i++) {
                 Item temp = new Item(parsedItems.get(i), Double.parseDouble(parsedPrices.get(i)));
@@ -85,10 +79,42 @@ public class TextBlockParser {
                 temp.print();
             }
         } catch (java.lang.NumberFormatException e) {
-            Log.e("TextBlockParser", "Can't figure out numbers");
+            Log.e(TAG, "Can't figure out numbers");
         }
 
-        return itemObjects;
+        /**
+         * Parses out TAX box to their respective doubles
+         * TODO: Should still grab the actual TAX, and get rid of the junk
+         */
+
+        ArrayList<String> parsedTaxes = stringParser(rawTaxes);
+        ArrayList<Double> finalTaxes = new ArrayList<>();
+
+        for (int i = 0; i < parsedTaxes.size(); i++) {
+            try {
+                finalTaxes.add(Double.parseDouble(parsedTaxes.get(i)));
+            } catch (Exception e) {
+                Log.e(TAG, "Can't figure out numbers");
+            }
+        }
+
+        Double finalTax = Double.MAX_VALUE;
+        // Get's the single TAX double
+        for (int i = 0; i < finalTaxes.size(); i++) {
+            int returnVal = Double.compare(finalTaxes.get(i), finalTax);
+            System.out.println("Return val " + returnVal);
+            if (returnVal < 0 ) {
+                finalTax = finalTaxes.get(i);
+            }
+        }
+
+        Bundle newBundle = new Bundle();
+        newBundle.putSerializable("Items", itemObjects);
+        newBundle.putDouble("Tax", finalTax);
+
+        Log.i(TAG, finalTax.toString());
+
+        return newBundle;
     }
 
     private ArrayList<String> stringParser(String s) {
@@ -107,7 +133,6 @@ public class TextBlockParser {
                 result.add(temp);
             }
         }
-
         return result;
     }
 

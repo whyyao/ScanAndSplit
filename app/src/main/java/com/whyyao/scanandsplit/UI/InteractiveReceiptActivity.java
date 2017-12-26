@@ -37,8 +37,9 @@ import java.util.ArrayList;
 
 public class InteractiveReceiptActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public ArrayList<Item> items;
-    private ArrayList<Contact> contactsArray;
+    public ArrayList<Item> mItems;
+    private ArrayList<Contact> mContactsArray;
+    private Double mTax;
 
     private FloatingActionButton mFAB;
     private Toolbar mToolbar;
@@ -46,6 +47,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     private ViewPager mViewPager;
     private ContactsPagerAdapter pagerAdapter;
 
+    private final String TAG = "ReceiptActivity";
     private final int PICK_CONTACT = 1;
     private final int PERMISSION_PICK_CONTACT = 2;
 
@@ -81,9 +83,10 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
 
     private void init(){
         Intent intent = getIntent();
-        items = intent.getParcelableArrayListExtra("Items");
-        contactsArray = new ArrayList<Contact>();
-
+        mItems = intent.getParcelableArrayListExtra("Items");
+        mTax = intent.getDoubleExtra("Tax", 0.0);
+        mContactsArray = new ArrayList<Contact>();
+        Log.i(TAG, mTax.toString());
         mFAB.setOnClickListener(this);
         mToolbar.setTitle("Picking Shoppers");
         setSupportActionBar(mToolbar);
@@ -107,7 +110,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
 
     private void setupViewPager(){
         pagerAdapter = new ContactsPagerAdapter(getSupportFragmentManager());
-        Contact allItem = new Contact("ME",null);
+        Contact allItem = new Contact("Me",null);
         mViewPager.setAdapter(pagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
@@ -119,7 +122,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         mTabLayout.setVisibility(View.VISIBLE);
         ContactFragment myFrag = new ContactFragment().newInstance();
         Bundle args = new Bundle();
-        args.putParcelableArrayList("items", items);
+        args.putParcelableArrayList("items", mItems);
         args.putParcelable("contact", contact);
         myFrag.setArguments(args);
         pagerAdapter.addFrag(myFrag, contact);
@@ -134,9 +137,10 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         switch(viewId) {
             case R.id.fab:
                 Log.d("taggg","pressed");
-                contactsArray = pagerAdapter.updateContacts();
+                mContactsArray = pagerAdapter.updateContacts();
                 Intent intent = new Intent(InteractiveReceiptActivity.this, CalculationActivity.class);
-                intent.putParcelableArrayListExtra("contacts", contactsArray);
+                intent.putParcelableArrayListExtra("contacts", mContactsArray);
+                intent.putExtra("tax", mTax);
                 startActivity(intent);
         }
     }
@@ -168,16 +172,16 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
                     Cursor c = managedQuery(contactData, null, null, null, null);
                     Contact mContact = grabContactInfo(c);
                     // Checking if the contact is already displayed
-                    if (contactsArray != null) {
-                        for (int i = 0; i < contactsArray.size(); i++) {
-                            if (contactsArray.get(i).getName().equals(mContact.getName())
-                                    && contactsArray.get(i).getPhoneNo().equals(mContact.getPhoneNo())) {
+                    if (mContactsArray != null) {
+                        for (int i = 0; i < mContactsArray.size(); i++) {
+                            if (mContactsArray.get(i).getName().equals(mContact.getName())
+                                    && mContactsArray.get(i).getPhoneNo().equals(mContact.getPhoneNo())) {
                                 Toast.makeText(this, "Contact already added", Toast.LENGTH_SHORT).show();
                                 return;
                             }
                         }
                     }
-                    contactsArray.add(mContact);
+                    mContactsArray.add(mContact);
                     addTap(mContact);
                     break;
                 }
@@ -226,11 +230,11 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
             case R.id.menu_remove_contact:
                 if(tabPosition == 0){
                     Snackbar meSnackbar = Snackbar.make(findViewById(R.id.layout_receipt),
-                            "You can't delete yourself :)", Snackbar.LENGTH_SHORT);
+                            "You can't delete yourself", Snackbar.LENGTH_SHORT);
                     meSnackbar.show();
-                }else {
+                } else {
                     pagerAdapter.removeFrag(tabPosition);
-                    contactsArray.remove(tabPosition);
+                    mContactsArray.remove(tabPosition);
                 }
             default:
                 return super.onOptionsItemSelected(item);

@@ -14,7 +14,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:text="Name"
-        android:textSize="18sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/tv_item_price"
@@ -24,5 +24,5 @@
         android:layout_alignParentRight="true"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:textSize="18sp" />
+        android:textSize="20sp" />
 </RelativeLayout>

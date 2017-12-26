@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -29,46 +30,73 @@ import java.util.Map;
 
 public class CalculationActivity extends AppCompatActivity implements View.OnClickListener {
     private final int PERMISSIONS_REQUEST_SEND_SMS = 0;
+    private final String TAG = "CalculationActivity";
+
     private String phoneNo;
     private String message;
     private CalculationAdapter mAdapter;
 
-    public double mTotal;
-    public ArrayList<Contact> mContacts;
-    public ArrayList<Double> mMoney;
-    public Map<String, Integer> mItemMap;
-    public FloatingActionButton calculate;
+    private double mTotal;
+    private double mTax;
+    private ArrayList<Contact> mContacts;
+    private ArrayList<Double> mContactsMoney;
+    private Map<String, Integer> mItemMap;
+
+    private FloatingActionButton calculate;
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculation);
-
-        getSupportActionBar().setTitle("Confirm Items Selections");
-
-        calculate = (FloatingActionButton) findViewById(R.id.calculate_button);
+        getSupportActionBar().setTitle("Confirm Selections");
         Intent intent = getIntent();
-        mTotal = 0;
         mContacts = intent.getParcelableArrayListExtra("contacts");
+        mTax = intent.getDoubleExtra("tax", 0.0);
+        mTotal = 0;
         mItemMap = new HashMap<>();
-        mMoney = new ArrayList<>();
-        initViews();
+        mContactsMoney = new ArrayList<>();
+        init();
     }
 
-    private void initViews() {
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerViewCalculation);
+    private void init() {
+        calculate = (FloatingActionButton) findViewById(R.id.calculate_button);
+
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerViewCalculation);
         recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+
+        layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
+
         prepareData();
-        mAdapter = new CalculationAdapter(mContacts, mMoney);
+
+        mAdapter = new CalculationAdapter(mContacts, mContactsMoney);
         recyclerView.setAdapter(mAdapter);
+
         TextView textView = (TextView) findViewById(R.id.textViewTotal2);
         textView.setText(String.format(Locale.CANADA, "$%.2f", mTotal));
+
+        TextView textView2 = (TextView) findViewById(R.id.textViewTotal4);
+        textView2.setText(String.format(Locale.CANADA, "$%.2f", mTax));
+
         calculate.setOnClickListener(this);
     }
 
-    private void buildMap() {
+    private void prepareData() {
+        buildItemMap();
+        double mSum = 0.0;
+        for (Contact c : mContacts) {
+            mSum = 0;
+            for (Item i : c.getItemList()) {
+                // Sum = item Price / Total amount of people who also have that item
+                mSum += i.getPrice() / mItemMap.get(i.getName());
+            }
+        }
+        mContactsMoney.add(mSum + (mTax/mContacts.size()));
+    }
+
+    private void buildItemMap() {
         int n;
         for (Contact c : mContacts) {
             for (Item i : c.getItemList()) {
@@ -81,18 +109,7 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
                 }
             }
         }
-    }
-
-    private void prepareData() {
-        buildMap();
-        double mSum;
-        for (Contact c : mContacts) {
-            mSum = 0;
-            for (Item i : c.getItemList()) {
-                mSum += i.getPrice() / mItemMap.get(i.getName());
-            }
-            mMoney.add(mSum);
-        }
+        mTotal = mTotal + mTax;
     }
 
     protected void sendSMSMessage() {
@@ -124,7 +141,7 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
                     Contact contact = mContacts.get(i);
                     if(!contact.getName().equals("ME")) {
                         phoneNo = contact.getPhoneNo();
-                        message = "You owe me $" + String.format(Locale.CANADA, "%.2f", mMoney.get(i)) + ".";
+                        message = "You owe me $" + String.format(Locale.CANADA, "%.2f", mContactsMoney.get(i)) + ".";
                         sendSMSMessage();
                     }
                 }

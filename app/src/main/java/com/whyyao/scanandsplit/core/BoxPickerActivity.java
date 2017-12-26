@@ -48,16 +48,15 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
 
     private final int INTERACTIVE_RECEIPT = 19;
     private final String TAG = "BoxPickerActivity";
-    private final String ITEM = "Item";
-    private final String PRICE = "Price";
-    private final String TAX = "Tax";
+    public static final String ITEM = "Item";
+    public static final String PRICE = "Price";
+    public static final String TAX = "Tax";
 
     private GraphicOverlay<OcrGraphic> mGraphicOverlay;
     private SparseArray<TextBlock> mInitialBlocks;
     private ArrayList<TextBlock> mSelectedBlocks;
     private ArrayList<String> mSelectedBlockID;
     private TextBlockParser mParser;
-    private ArrayList<Item> mItemList;
     private Bitmap mBitmap;
     private ImageView mImage;
     private FloatingActionButton mFAB;
@@ -160,9 +159,10 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
                     meSnackbar.show();
                     break;
                 } else {
+                    Bundle tempBundle = new Bundle(mParser.parse(mSelectedBlocks, mSelectedBlockID));
                     Intent intent = new Intent(this, InteractiveReceiptActivity.class);
-                    mItemList = new ArrayList<>(mParser.parse(mSelectedBlocks));
-                    intent.putExtra("Items", mItemList);
+                    intent.putExtra("Items", tempBundle.getParcelableArrayList("Items"));
+                    intent.putExtra("Tax", tempBundle.getDouble("Tax"));
                     startActivityForResult(intent, INTERACTIVE_RECEIPT);
                     break;
                 }
@@ -355,7 +355,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
                 tax++;
             }
         }
-        if (item > 0 && price > 0 && tax > 0) {
+        if (item > 0 && price > 0 && tax == 1) {
             return true;
         }
         return false;
