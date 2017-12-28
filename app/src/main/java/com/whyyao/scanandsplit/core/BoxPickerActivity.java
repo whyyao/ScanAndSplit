@@ -163,6 +163,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
                     Intent intent = new Intent(this, InteractiveReceiptActivity.class);
                     intent.putExtra("Items", tempBundle.getParcelableArrayList("Items"));
                     intent.putExtra("Tax", tempBundle.getDouble("Tax"));
+                    Log.i(TAG, "Tax = " + Double.toString(tempBundle.getDouble("Tax")));
                     startActivityForResult(intent, INTERACTIVE_RECEIPT);
                     break;
                 }
