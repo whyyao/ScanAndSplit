@@ -1,6 +1,9 @@
 package com.whyyao.scanandsplit.UI;
 
 import android.Manifest;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -36,16 +39,19 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
 
     public double mTotal;
     public double mTax;
+    public static int mStackLevel;
     public ArrayList<Contact> mContacts;
     public ArrayList<Double> mMoney;
     public Map<String, Integer> mItemMap;
     public FloatingActionButton calculate;
+    private FloatingActionButton mAddTip;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mStackLevel = 0;
         setContentView(R.layout.activity_calculation);
-
         getSupportActionBar().setTitle("Confirm Items Selections");
         calculate = (FloatingActionButton) findViewById(R.id.calculate_button);
         Intent intent = getIntent();
@@ -59,6 +65,8 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void initViews() {
+        mAddTip = (FloatingActionButton) findViewById(R.id.add_tip);
+        mAddTip.setOnClickListener(this);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerViewCalculation);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -131,13 +139,17 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
             case R.id.calculate_button:
                 for (int i = 0; i < mContacts.size(); i++) {
                     Contact contact = mContacts.get(i);
-                    if(!contact.getName().equals("ME")) {
+                    if (!contact.getName().equals("ME")) {
                         phoneNo = contact.getPhoneNo();
                         message = "You owe me $" + String.format(Locale.CANADA, "%.2f", mMoney.get(i)) + ".";
                         sendSMSMessage();
                     }
                 }
                 break;
+            case R.id.add_tip:
+                showTip();
+                break;
+
         }
     }
 
@@ -169,5 +181,23 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
         super.onDestroy();
         mAdapter.clearAdapter();
         mAdapter.notifyDataSetChanged();
+    }
+
+    void showTip() {
+        mStackLevel++;
+
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = TipFragment.newInstance(mStackLevel);
+        newFragment.show(ft, "dialog");
     }
 }

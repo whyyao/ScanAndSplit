@@ -24,19 +24,6 @@
         app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@drawable/ic_send" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_tip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginRight="16dp"
-        android:clickable="true"
-        app:backgroundTint="@color/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/calculate_button"
-        app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@drawable/ic_add_white_24px" />
-
-
 
     <RelativeLayout
         android:id="@+id/relativeLayoutTotal"
@@ -47,8 +34,9 @@
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayoutTotal2">
+        app:layout_constraintTop_toBottomOf="@+id/relative_layout_tip">
 
         <TextView
             android:id="@+id/textViewTotal"
@@ -62,6 +50,40 @@
 
         <TextView
             android:id="@+id/textViewTotal2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="TextView"
+            android:textSize="18sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relative_layout_tip"
+        android:layout_width="match_parent"
+        android:layout_height="39dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayoutTotal2">
+
+        <TextView
+            android:id="@+id/textView_tip1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="Tip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/textView_ttip2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

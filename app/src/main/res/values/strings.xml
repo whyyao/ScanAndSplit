@@ -101,4 +101,7 @@
     <string name="textfilename">Filename:</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="privacy_policy_link">https://github.com/Aniruddha-Tapas/Document-Scanner/blob/master/PrivacyPolicy.md</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

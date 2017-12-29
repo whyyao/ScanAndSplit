@@ -42,6 +42,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
     private Double mTax;
 
     private FloatingActionButton mFAB;
+
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
@@ -74,7 +75,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         setupViewPager();
     }
 
-    private void bindViews(){
+    private void bindViews() {
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
