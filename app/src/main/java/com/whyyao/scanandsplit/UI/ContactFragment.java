@@ -50,7 +50,7 @@ public class ContactFragment extends Fragment {
         Bundle args = getArguments();
         ArrayList<Item> items = args.getParcelableArrayList("items");
         mContact= args.getParcelable("contact");
-        mAdapter = new ItemListAdapter(getActivity(), items, (ArrayList) mContact.getItemList(), ContactFragment.this);
+        mAdapter = new ItemListAdapter(getActivity(), items, ContactFragment.this);
         itemList.setLayoutManager(new LinearLayoutManager(getActivity()));
         itemList.setAdapter(mAdapter);
     }

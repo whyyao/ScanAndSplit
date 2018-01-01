@@ -45,7 +45,7 @@ import static android.content.DialogInterface.BUTTON_NEUTRAL;
 import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 public class CalculationActivity extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnClickListener, TextWatcher {
-    private final int PERMISSIONS_REQUEST_SEND_SMS = 0;
+    private final int PERMISSIONS_REQUEST_SEND_SMS = 98;
     private final String TAG = "Calculation";
     private Boolean mFlag;
     private String phoneNo;
@@ -130,9 +130,10 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
     }
 
     protected void sendSMSMessage() {
+
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, PERMISSIONS_REQUEST_SEND_SMS);
-        }else{
+        }else if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED){
             SmsManager smsManager = SmsManager.getDefault();
             smsManager.sendTextMessage(phoneNo, null, message, null, null);
             Snackbar.make(findViewById(R.id.layout_calculation), "SMS sent", Snackbar.LENGTH_LONG).show();
@@ -166,7 +167,6 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
             case R.id.add_tip:
                 createTipDialog();
                 break;
-
         }
     }
 

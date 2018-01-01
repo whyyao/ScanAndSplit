@@ -6,6 +6,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,8 +21,10 @@ import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -86,9 +89,11 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
         secondIsOn = false;
         thirdIsOn = false;
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
+
         bindViews();
         init();
     }
+
 
     private void bindViews(){
         mImage = (ImageView) findViewById(R.id.parsedImage);
@@ -97,6 +102,7 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
         mFirstToggle = (ToggleButton) findViewById(R.id.toggle_1);
         mSecondToggle = (ToggleButton) findViewById(R.id.toggle_2);
         mThirdToggle = (ToggleButton) findViewById(R.id.toggle_3);
+
     }
 
     private void init(){
@@ -361,5 +367,4 @@ public class BoxPickerActivity extends AppCompatActivity implements View.OnClick
         }
         return false;
     }
-
 }

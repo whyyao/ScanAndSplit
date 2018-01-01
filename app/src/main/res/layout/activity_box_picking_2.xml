@@ -49,29 +49,38 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/parsedImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/linearLayout"/>
-
-    <com.whyyao.scanandsplit.core.GraphicOverlay
-        android:id="@+id/graphicOverlay"
+    <RelativeLayout
+        android:id="@+id/relativelayout_box"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/linearLayout" />
+        android:layout_below="@+id/linearLayout">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/box_finished"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/colorUnpicked"
-        android:visibility="invisible"
-        android:src="@mipmap/ic_check_black_24dp" />
+        <ImageView
+            android:id="@+id/parsedImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+        <com.whyyao.scanandsplit.core.GraphicOverlay
+            android:id="@+id/graphicOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/box_finished"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/colorUnpicked"
+            android:visibility="invisible"
+            android:src="@mipmap/ic_check_black_24dp" />
+
+    </RelativeLayout>
+
 
 </RelativeLayout>

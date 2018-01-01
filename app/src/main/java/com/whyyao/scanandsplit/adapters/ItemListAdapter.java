@@ -26,11 +26,11 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ViewHo
     private ContactFragment mFrag;
     private ArrayList<Item> mContactItems;
 
-    public ItemListAdapter(Context context, ArrayList<Item> data, ArrayList<Item> contactItemData, ContactFragment fragment)
+    public ItemListAdapter(Context context, ArrayList<Item> data,  ContactFragment fragment)
     {
         mContext = context;
         mItems = new ArrayList<>(data);
-        mContactItems = new ArrayList<>(contactItemData);
+        mContactItems = new ArrayList<>();
         mFrag = fragment;
     }
 

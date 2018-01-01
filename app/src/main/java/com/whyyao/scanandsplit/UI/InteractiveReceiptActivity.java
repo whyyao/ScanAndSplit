@@ -115,6 +115,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         mViewPager.setAdapter(pagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        mContactsArray.add(allItem);
         addTap(allItem);
     }
 
@@ -138,7 +139,7 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
         switch(viewId) {
             case R.id.fab:
                 Log.d("taggg","pressed");
-                mContactsArray = pagerAdapter.updateContacts();
+                //mContactsArray = pagerAdapter.updateContacts();
                 Intent intent = new Intent(InteractiveReceiptActivity.this, CalculationActivity.class);
                 intent.putParcelableArrayListExtra("contacts", mContactsArray);
                 intent.putExtra("tax", mTax);
@@ -181,9 +182,9 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
                                 return;
                             }
                         }
+                        mContactsArray.add(mContact);
+                        addTap(mContact);
                     }
-                    mContactsArray.add(mContact);
-                    addTap(mContact);
                     break;
                 }
             case (RESULT_CANCELED):
@@ -227,16 +228,10 @@ public class InteractiveReceiptActivity extends AppCompatActivity implements Vie
                     ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CONTACTS}, PERMISSION_PICK_CONTACT);
                 }
                 return true;
-
             case R.id.menu_remove_contact:
-                if(tabPosition == 0){
-                    Snackbar meSnackbar = Snackbar.make(findViewById(R.id.layout_receipt),
-                            "You can't delete yourself", Snackbar.LENGTH_SHORT);
-                    meSnackbar.show();
-                } else {
-                    pagerAdapter.removeFrag(tabPosition);
-                    mContactsArray.remove(tabPosition);
-                }
+                mContactsArray.remove(tabPosition);
+                pagerAdapter.removeFrag(tabPosition);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
