@@ -3,7 +3,9 @@ package com.whyyao.scanandsplit.UI;
 import android.Manifest;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -11,16 +13,23 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
+import android.text.Editable;
+import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import com.blackcat.currencyedittext.CurrencyEditText;
 import com.whyyao.scanandsplit.R;
 import com.whyyao.scanandsplit.adapters.CalculationAdapter;
 import com.whyyao.scanandsplit.models.Contact;
@@ -31,20 +40,28 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class CalculationActivity extends AppCompatActivity implements View.OnClickListener {
+import static android.content.DialogInterface.BUTTON_NEGATIVE;
+import static android.content.DialogInterface.BUTTON_NEUTRAL;
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+
+public class CalculationActivity extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnClickListener, TextWatcher {
     private final int PERMISSIONS_REQUEST_SEND_SMS = 0;
+    private final String TAG = "Calculation";
+    private Boolean mFlag;
     private String phoneNo;
     private String message;
     private CalculationAdapter mAdapter;
 
     public double mTotal;
     public double mTax;
+    public double mTip;
     public static int mStackLevel;
     public ArrayList<Contact> mContacts;
     public ArrayList<Double> mMoney;
     public Map<String, Integer> mItemMap;
     public FloatingActionButton calculate;
     private FloatingActionButton mAddTip;
+    private CurrencyEditText mTipInput;
 
 
     @Override
@@ -147,7 +164,7 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
                 }
                 break;
             case R.id.add_tip:
-                showTip();
+                createTipDialog();
                 break;
 
         }
@@ -183,21 +200,63 @@ public class CalculationActivity extends AppCompatActivity implements View.OnCli
         mAdapter.notifyDataSetChanged();
     }
 
-    void showTip() {
-        mStackLevel++;
-
-        // DialogFragment.show() will take care of adding the fragment
-        // in a transaction.  We also want to remove any currently showing
-        // dialog, so make our own transaction and take care of that here.
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
-        if (prev != null) {
-            ft.remove(prev);
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        switch (which) {
+            case BUTTON_NEGATIVE:
+                Log.i(TAG, "Button negative");
+                dialog.dismiss();
+                break;
+            case BUTTON_POSITIVE:
+                Log.i(TAG, "Button positive");
+                dialog.dismiss();
+                break;
         }
-        ft.addToBackStack(null);
+    }
 
-        // Create and show the dialog.
-        DialogFragment newFragment = TipFragment.newInstance(mStackLevel);
-        newFragment.show(ft, "dialog");
+    // Yuck... Wish the fragment manager would work so all these listeners wouldn't be inside this class
+    // Only issue with the fragment manager is that the CurrencyEditText isn't automatically in focus
+    public void createTipDialog() {
+
+        //        FragmentManager fm = this.getFragmentManager();
+        //        TipFragment dialog = new TipFragment();
+        //        dialog.show(fm, "TipFragment");
+        
+        // Doing the above method doesn't have the Tax already in focus... maybe this can be fixed
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View newFileView = inflater.inflate(R.layout.fragment_tip, null);
+
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+        builder.setTitle("Add a tip?");
+        builder.setView(newFileView);
+        mTipInput = newFileView.findViewById(R.id.tip_input);
+        mTipInput.addTextChangedListener(this);
+        builder.setPositiveButton("OK", this);
+        builder.setNegativeButton("Cancel", this);
+        builder.show();
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        try {
+            String rawVal = mTipInput.getText().toString();
+            Log.i(TAG, "RawVal = " + rawVal);
+            rawVal = new StringBuffer(rawVal).insert(rawVal.length()-2, ".").toString();
+            mTip = Double.parseDouble(rawVal);
+            Log.i(TAG, "Tip = " + Double.toString(mTip));
+        } catch (Exception e) {
+            // Need try catch so even if you're looking at the null value, it doesn't bug out...
+        }
     }
 }

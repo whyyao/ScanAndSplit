@@ -8,6 +8,9 @@
     <string name="picking_items">Items</string>
     <string name="picking_prices">Prices</string>
     <string name="picking_tax">Tax</string>
+    <string name="tip_adder">Add a tip?</string>
+    <string name="camel_case_okay">Okay</string>
+    <string name="camel_case_cancel">Cancel</string>
 
     <string name="clear_contacts"> Clear Selection</string>
     <string name="search_contacts"> Search </string>
